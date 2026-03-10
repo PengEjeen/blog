@@ -98,63 +98,161 @@ a {
   width: 100%;
 }
 
-/* Hero Section */
-.hero {
+/* Architecture Hero Section */
+.arch-hero {
+  text-align: center;
   margin-bottom: 3rem;
 }
 
-.hero h1 {
+.arch-hero h1 {
   font-size: 2.5rem;
   font-weight: 700;
-  margin-bottom: 0.75rem;
-  line-height: 1.2;
+  margin-bottom: 0.5rem;
 }
 
-.hero p {
-  font-size: 1.125rem;
+.arch-hero p {
   color: var(--text-muted);
-  max-width: 600px;
 }
 
-/* Categories Grid */
-.categories-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 1.5rem;
+/* Content Wrapper */
+.content-wrapper {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.category-card {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: 12px;
-  padding: 1.5rem;
+/* Architecture Diagram Layout */
+.architecture-diagram {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
+  padding: 3rem 0;
+}
+
+.arch-layer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+
+.middle-layer {
+  gap: 3rem;
+  margin: 2rem 0;
+}
+
+.bottom-nodes {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+/* Architecture Nodes */
+.arch-node {
+  background: var(--card-bg);
+  border: 3px solid var(--card-border);
+  border-radius: 16px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 1rem;
+  min-width: 180px;
+  text-align: center;
   transition: all 0.2s ease;
+  z-index: 2;
+  position: relative;
 }
 
-.category-card:hover {
-  transform: translateY(-2px);
-  border-color: var(--card-hover-border);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+.arch-node:hover {
+  transform: translateY(-6px);
+  border-color: var(--primary);
+  box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.1), 0 4px 6px -2px rgba(59, 130, 246, 0.05);
 }
 
-.category-icon {
-  width: 32px;
-  height: 32px;
-}
-
-.category-name {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-top: 0.5rem;
-}
-
-.category-count {
-  font-size: 0.875rem;
+.arch-icon {
+  width: 48px;
+  height: 48px;
   color: var(--text-muted);
+  transition: color 0.2s ease;
+}
+
+.arch-node:hover .arch-icon {
+  color: var(--primary);
+}
+
+.arch-label {
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--text-color);
+}
+
+/* Special Node Styling */
+.core-node {
+  border-color: var(--primary);
+  border-width: 4px;
+  min-width: 220px;
+  transform: scale(1.1);
+}
+
+.core-node .arch-icon {
+  color: var(--primary);
+  width: 56px;
+  height: 56px;
+}
+
+.fe-node:hover { border-color: #10b981; }
+.fe-node:hover .arch-icon { color: #10b981; }
+
+.db-node:hover { border-color: #f59e0b; }
+.db-node:hover .arch-icon { color: #f59e0b; }
+
+.cloud-node:hover { border-color: #0ea5e9; }
+.cloud-node:hover .arch-icon { color: #0ea5e9; }
+
+.mlai-node:hover { border-color: #ef4444; }
+.mlai-node:hover .arch-icon { color: #ef4444; }
+
+/* Connecting Lines */
+.arch-line {
+  background-color: var(--card-border);
+  position: absolute;
+  z-index: 1;
+}
+
+.vertical {
+  width: 4px;
+  height: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.arch-layer:first-child .vertical {
+  bottom: -60px;
+}
+
+.arch-layer:last-child .vertical {
+  top: -60px;
+}
+
+.horizontal {
+  height: 4px;
+  width: 60px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.left-line {
+  right: calc(50% + 110px); /* Adjust based on core node width */
+  width: calc(50% - 220px); 
+}
+
+.right-line {
+  left: calc(50% + 110px);
+  width: calc(50% - 220px);
 }
 
 /* Category Detail Page */
@@ -197,4 +295,41 @@ a {
 
 .empty-state p {
   color: var(--text-muted);
+}
+
+/* Side Extras */
+.side-extras {
+  position: absolute;
+  top: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.left-side {
+  left: -4rem; /* Pushed significantly to the left */
+}
+
+.right-side {
+  right: -4rem;
+}
+
+.special-node {
+  border-style: dashed;
+}
+
+.travel-node {
+  border-color: #ec4899;
+}
+
+.travel-node:hover {
+  border-color: #db2777;
+}
+
+.travel-node .arch-icon {
+  color: #f472b6;
+}
+
+.travel-node:hover .arch-icon {
+  color: #db2777;
 }

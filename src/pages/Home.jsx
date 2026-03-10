@@ -1,53 +1,97 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  Server, 
-  MonitorPlay, 
-  Briefcase, 
-  CloudRain, 
-  Database, 
-  Activity, 
-  Cpu, 
-  Wrench 
+import {
+  Server,
+  MonitorPlay,
+  Briefcase,
+  CloudRain,
+  Database,
+  Activity,
+  Cpu,
+  Wrench,
+  Plane,
+  Brain
 } from 'lucide-react';
-
-const categories = [
-  { name: 'BE', icon: Server, color: '#3b82f6', posts: 12 },
-  { name: 'FE', icon: MonitorPlay, color: '#10b981', posts: 15 },
-  { name: 'CS', icon: Cpu, color: '#8b5cf6', posts: 8 },
-  { name: 'Cloud', icon: CloudRain, color: '#0ea5e9', posts: 5 },
-  { name: 'Database', icon: Database, color: '#f59e0b', posts: 10 },
-  { name: 'DevOps', icon: Activity, color: '#ef4444', posts: 7 },
-  { name: 'Career', icon: Briefcase, color: '#eab308', posts: 4 },
-  { name: 'Tools', icon: Wrench, color: '#64748b', posts: 6 },
-];
 
 const Home = () => {
   return (
     <div className="home-container">
-      <section className="hero">
-        <h1>Welcome to PenGejeen's Blog</h1>
-        <p>A place where I share my thoughts, learnings, and experiences in software engineering.</p>
+      <section className="arch-hero">
+        <h1>System Architecture</h1>
+        <p>Select a component to dive into its engineering details</p>
       </section>
 
-      <section>
-        <div className="categories-grid">
-          {categories.map((cat, index) => {
-            const IconComponent = cat.icon;
-            return (
-              <Link 
-                to={`/category/${cat.name}`} 
-                key={cat.name} 
-                className="category-card"
-              >
-                <IconComponent className="category-icon" style={{ color: cat.color }} />
-                <h3 className="category-name">{cat.name}</h3>
-                <span className="category-count">{cat.posts} Posts</span>
+      <div className="content-wrapper">
+        <aside className="side-extras left-side">
+          <Link to="/category/Travel" className="arch-node special-node travel-node">
+            <Plane className="arch-icon" />
+            <div className="arch-label">Travel</div>
+          </Link>
+        </aside>
+
+        <section className="architecture-diagram">
+          {/* Top Level: User / FE */}
+          <div className="arch-layer">
+            <Link to="/category/FE" className="arch-node fe-node">
+              <MonitorPlay className="arch-icon" />
+              <div className="arch-label">Frontend (FE)</div>
+            </Link>
+            <div className="arch-line vertical"></div>
+          </div>
+
+          {/* Middle Level: BE, DevOps, Tools */}
+          <div className="arch-layer middle-layer">
+            <Link to="/category/DevOps" className="arch-node devops-node side-node">
+              <Activity className="arch-icon" />
+              <div className="arch-label">DevOps</div>
+            </Link>
+
+            <div className="arch-line horizontal left-line"></div>
+
+            <Link to="/category/BE" className="arch-node core-node">
+              <Server className="arch-icon" />
+              <div className="arch-label">Backend (BE)</div>
+            </Link>
+
+            <div className="arch-line horizontal right-line"></div>
+
+            <Link to="/category/MLAI" className="arch-node mlai-node side-node">
+              <Brain className="arch-icon" />
+              <div className="arch-label">ML / AI</div>
+            </Link>
+          </div>
+
+          {/* Bottom Level: DB, Cloud, CS */}
+          <div className="arch-layer">
+            <div className="arch-line vertical"></div>
+            <div className="bottom-nodes">
+              <Link to="/category/Database" className="arch-node db-node">
+                <Database className="arch-icon" />
+                <div className="arch-label">Database</div>
               </Link>
-            );
-          })}
-        </div>
-      </section>
+              <Link to="/category/Cloud" className="arch-node cloud-node">
+                <CloudRain className="arch-icon" />
+                <div className="arch-label">Cloud</div>
+              </Link>
+              <Link to="/category/CS" className="arch-node cs-node">
+                <Cpu className="arch-icon" />
+                <div className="arch-label">CS</div>
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        <aside className="side-extras right-side">
+          {/* <Link to="/category/Career" className="arch-node special-node career-node">
+            <Briefcase className="arch-icon" />
+            <div className="arch-label">Career</div>
+          </Link> */}
+          {/* <Link to="/category/Tools" className="arch-node special-node tools-node" style={{ marginTop: '2rem' }}>
+            <Wrench className="arch-icon" />
+            <div className="arch-label">Tools</div>
+          </Link> */}
+        </aside>
+      </div>
     </div>
   );
 };
