@@ -192,16 +192,22 @@ a {
 
 /* Special Node Styling */
 .core-node {
-  border-color: var(--primary);
   border-width: 4px;
   min-width: 220px;
   transform: scale(1.1);
 }
 
 .core-node .arch-icon {
-  color: var(--primary);
   width: 56px;
   height: 56px;
+}
+
+.core-node:hover {
+  border-color: var(--primary);
+}
+
+.core-node:hover .arch-icon {
+  color: var(--primary);
 }
 
 .fe-node:hover { border-color: #10b981; }
@@ -332,4 +338,103 @@ a {
 
 .travel-node:hover .arch-icon {
   color: #db2777;
+}
+
+.blog-category-page {
+  width: 100%;
+}
+
+.blog-category-header {
+  margin-bottom: 2rem;
+}
+
+.category-subtitle {
+  margin-top: 0.6rem;
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
+.folder-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.folder-blog-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding: 1.2rem;
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  background: linear-gradient(160deg, var(--card-bg) 0%, var(--bg-color) 100%);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  animation: cardFadeIn 0.35s ease both;
+  cursor: pointer;
+}
+
+.folder-blog-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary);
+  box-shadow: 0 14px 30px -20px rgba(59, 130, 246, 0.45);
+}
+
+.folder-blog-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.82rem;
+}
+
+.folder-count {
+  color: var(--text-muted);
+}
+
+.folder-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.folder-preview {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--text-muted);
+  font-size: 0.93rem;
+  min-height: 1.5rem;
+}
+
+.folder-preview span {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.folder-card-cta {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+@keyframes cardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .folder-card-grid {
+    grid-template-columns: 1fr;
+  }
 }

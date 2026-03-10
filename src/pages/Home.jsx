@@ -17,7 +17,7 @@ const Home = () => {
   return (
     <div className="home-container">
       <section className="arch-hero">
-        <h1>System Architecture</h1>
+        <h1>조남영의 블로그</h1>
         <p>Select a component to dive into its engineering details</p>
       </section>
 

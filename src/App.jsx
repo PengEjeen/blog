@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Home from './pages/Home';
 import Category from './pages/Category';
+import Subcategory from './pages/Subcategory';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/category/:name" element={<Category />} />
+          <Route path="/category/:name/:subcategory" element={<Subcategory />} />
         </Routes>
       </main>
     </div>
