@@ -1,8 +1,9 @@
 import React, { useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, BookOpen, FileText, ChevronRight } from 'lucide-react';
+import { ArrowLeft, BookOpen, FileText, ChevronRight, Calendar } from 'lucide-react';
 
 const humanize = (value = '') => value.replace(/_/g, ' ');
+const FALLBACK_POST_DATE = '날짜 미정';
 
 const sortByNumericPrefix = (a, b) => {
   const matchA = a.match(/^(\d+)/);
@@ -15,13 +16,30 @@ const sortByNumericPrefix = (a, b) => {
   return a.localeCompare(b, 'ko');
 };
 
+const formatPostDate = (date) => {
+  if (!date) {
+    return FALLBACK_POST_DATE;
+  }
+
+  const parsed = new Date(date);
+
+  if (Number.isNaN(parsed.getTime())) {
+    return date;
+  }
+
+  return parsed.toLocaleDateString('ko-KR');
+};
+
 const Category = () => {
   const { name } = useParams();
   const navigate = useNavigate();
   const decodedName = decodeURIComponent(name || '');
 
   const folderCards = useMemo(() => {
-    const markdownModules = import.meta.glob('../../content/posts/**/*.md');
+    const markdownModules = import.meta.glob('../../content/posts/**/*.md', {
+      query: '?raw',
+      import: 'default',
+    });
     const keepModules = import.meta.glob('../../content/posts/**/.gitkeep');
     const grouped = new Map();
 
@@ -48,7 +66,11 @@ const Category = () => {
         const title = humanize(fileName.replace(/\.md$/, ''));
 
         ensureFolder(folderName);
-        grouped.get(folderName).push({ fileName, title });
+        grouped.get(folderName).push({
+          fileName,
+          title,
+          date: null,
+        });
       }
     }
 
@@ -62,6 +84,7 @@ const Category = () => {
           title: humanize(folderName),
           count: posts.length,
           latestTitle: latest?.title,
+          latestDate: formatPostDate(latest?.date),
         };
       })
       .sort((a, b) => a.title.localeCompare(b.title, 'ko'));
@@ -100,20 +123,33 @@ const Category = () => {
               tabIndex={0}
               aria-label={`${folder.title} 폴더 열기`}
             >
-              <div className="folder-blog-card-top">
-                <span className="folder-count">{folder.count} posts</span>
+              <div className="folder-card-main">
+                <div className="folder-blog-card-top">
+                  <span className="folder-count">{folder.count} posts</span>
+                </div>
+
+                <h3 className="folder-title">{folder.title}</h3>
+
+                <div className="folder-card-cta">
+                  <span>바로가기</span>
+                  <ChevronRight size={16} />
+                </div>
               </div>
 
-              <h3 className="folder-title">{folder.title}</h3>
+              <div className="folder-card-side">
+                <div className="folder-meta-list">
+                  <p className="folder-preview">
+                    <FileText size={14} />
+                    <span>
+                      최근 포스트: {folder.latestTitle || '아직 게시글이 없습니다.'}
+                    </span>
+                  </p>
 
-              <p className="folder-preview">
-                <FileText size={14} />
-                <span>{folder.latestTitle || '아직 게시글이 없습니다.'}</span>
-              </p>
-
-              <div className="folder-card-cta">
-                <span>바로가기</span>
-                <ChevronRight size={16} />
+                  <p className="folder-preview">
+                    <Calendar size={14} />
+                    <span>포스트 날짜: {folder.latestDate}</span>
+                  </p>
+                </div>
               </div>
             </article>
           ))}

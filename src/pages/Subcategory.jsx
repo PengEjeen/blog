@@ -1,8 +1,14 @@
 import React, { useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, FileText, Calendar } from 'lucide-react';
-
-const humanize = (value = '') => value.replace(/_/g, ' ');
+import {
+  extractFrontmatter,
+  formatPostDate,
+  getPostSlugFromFileName,
+  getPostTitleFromFileName,
+  humanize,
+  sortByNumericPrefix,
+} from '../utils/posts';
 
 const Subcategory = () => {
   const { name, subcategory } = useParams();
@@ -10,25 +16,31 @@ const Subcategory = () => {
   const decodedSubcategory = decodeURIComponent(subcategory || '');
 
   const posts = useMemo(() => {
-    const modules = import.meta.glob('../../content/posts/**/*.md');
+    const modules = import.meta.glob('../../content/posts/**/*.md', {
+      eager: true,
+      query: '?raw',
+      import: 'default',
+    });
     const matchedPosts = [];
 
-    for (const path in modules) {
+    for (const [path, raw] of Object.entries(modules)) {
       const parts = path.split('/posts/')[1]?.split('/') || [];
 
       if (parts.length >= 3 && parts[0] === decodedName && parts[1] === decodedSubcategory) {
         const fileName = parts[parts.length - 1];
-        const title = fileName.replace(/\.md$/, '').replace(/_/g, ' ');
+        const { data } = extractFrontmatter(raw);
 
         matchedPosts.push({
           path,
-          title,
-          date: new Date().toLocaleDateString(),
+          fileName,
+          slug: getPostSlugFromFileName(fileName),
+          title: data.title || getPostTitleFromFileName(fileName),
+          date: formatPostDate(data.date || data.created || data.updated),
         });
       }
     }
 
-    return matchedPosts;
+    return matchedPosts.sort((a, b) => sortByNumericPrefix(a.fileName, b.fileName));
   }, [decodedName, decodedSubcategory]);
 
   return (
@@ -40,23 +52,24 @@ const Subcategory = () => {
         <h1 className="category-title">{humanize(decodedSubcategory)}</h1>
       </div>
 
-      <div className="posts-list" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      <div className="posts-list post-list-grid">
         {posts.length > 0 ? (
           posts.map((post, index) => (
-            <div
+            <Link
               key={post.path}
-              className="category-card"
-              style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: '1.5rem', animationDelay: `${index * 0.1}s` }}
+              to={`/category/${encodeURIComponent(decodedName)}/${encodeURIComponent(decodedSubcategory)}/${encodeURIComponent(post.slug)}`}
+              className="post-list-card"
+              style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <FileText style={{ color: 'var(--secondary)' }} />
-                <h3 className="category-name" style={{ margin: 0, fontSize: '1.2rem' }}>{post.title}</h3>
+              <div className="post-list-main">
+                <FileText style={{ color: 'var(--primary)' }} />
+                <h3 className="category-name post-list-title">{post.title}</h3>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+              <div className="post-list-date">
                 <Calendar size={14} />
                 <span>{post.date}</span>
               </div>
-            </div>
+            </Link>
           ))
         ) : (
           <div className="empty-state">

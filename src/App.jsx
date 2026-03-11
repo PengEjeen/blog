@@ -4,6 +4,7 @@ import Header from './components/Header';
 import Home from './pages/Home';
 import Category from './pages/Category';
 import Subcategory from './pages/Subcategory';
+import Post from './pages/Post';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/category/:name" element={<Category />} />
           <Route path="/category/:name/:subcategory" element={<Subcategory />} />
+          <Route path="/category/:name/:subcategory/:post" element={<Post />} />
         </Routes>
       </main>
     </div>
