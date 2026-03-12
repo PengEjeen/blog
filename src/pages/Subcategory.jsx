@@ -25,11 +25,9 @@ const Subcategory = () => {
 
     for (const [path, raw] of Object.entries(modules)) {
       const parts = path.split('/posts/')[1]?.split('/') || [];
-
       if (parts.length >= 3 && parts[0] === decodedName && parts[1] === decodedSubcategory) {
         const fileName = parts[parts.length - 1];
         const { data } = extractFrontmatter(raw);
-
         matchedPosts.push({
           path,
           fileName,
@@ -44,36 +42,37 @@ const Subcategory = () => {
   }, [decodedName, decodedSubcategory]);
 
   return (
-    <div className="subcategory-page">
+    <div className="category-page">
       <div className="page-header">
         <Link to={`/category/${encodeURIComponent(decodedName)}`} className="back-btn">
-          <ArrowLeft size={16} /> Back to {decodedName}
+          <ArrowLeft size={16} /> {humanize(decodedName)}
         </Link>
-        <h1 className="category-title">{humanize(decodedSubcategory)}</h1>
+        <h1 className="page-title">{humanize(decodedSubcategory)}</h1>
+        <p className="page-subtitle">{posts.length}개의 포스트</p>
       </div>
 
-      <div className="posts-list post-list-grid">
+      <div className="post-list-grid">
         {posts.length > 0 ? (
           posts.map((post, index) => (
             <Link
               key={post.path}
               to={`/category/${encodeURIComponent(decodedName)}/${encodeURIComponent(decodedSubcategory)}/${encodeURIComponent(post.slug)}`}
               className="post-list-card"
-              style={{ animationDelay: `${index * 0.1}s` }}
+              style={{ animationDelay: `${index * 0.08}s` }}
             >
               <div className="post-list-main">
-                <FileText style={{ color: 'var(--primary)' }} />
-                <h3 className="category-name post-list-title">{post.title}</h3>
+                <FileText size={16} style={{ color: 'var(--primary)', flexShrink: 0 }} />
+                <h3 className="post-list-title">{post.title}</h3>
               </div>
               <div className="post-list-date">
-                <Calendar size={14} />
+                <Calendar size={13} />
                 <span>{post.date}</span>
               </div>
             </Link>
           ))
         ) : (
           <div className="empty-state">
-            <p>No posts found in this folder.</p>
+            <p>게시글이 없습니다.</p>
           </div>
         )}
       </div>

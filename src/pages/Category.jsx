@@ -1,164 +1,131 @@
-import React, { useMemo } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, BookOpen, FileText, ChevronRight, Calendar } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { ArrowLeft, BookOpen, ChevronDown, Calendar } from 'lucide-react';
+import {
+  extractFrontmatter,
+  formatPostDate,
+  getPostSlugFromFileName,
+  getPostTitleFromFileName,
+  humanize,
+  sortByNumericPrefix,
+} from '../utils/posts';
 
-const humanize = (value = '') => value.replace(/_/g, ' ');
-const FALLBACK_POST_DATE = '날짜 미정';
-
-const sortByNumericPrefix = (a, b) => {
-  const matchA = a.match(/^(\d+)/);
-  const matchB = b.match(/^(\d+)/);
-
-  if (matchA && matchB) {
-    return Number(matchA[1]) - Number(matchB[1]);
-  }
-
-  return a.localeCompare(b, 'ko');
-};
-
-const formatPostDate = (date) => {
-  if (!date) {
-    return FALLBACK_POST_DATE;
-  }
-
-  const parsed = new Date(date);
-
-  if (Number.isNaN(parsed.getTime())) {
-    return date;
-  }
-
-  return parsed.toLocaleDateString('ko-KR');
-};
+// one accent color per section, cycling
+const ACCENTS = [
+  '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6',
+  '#ef4444', '#0ea5e9', '#f97316', '#6366f1',
+];
 
 const Category = () => {
   const { name } = useParams();
-  const navigate = useNavigate();
   const decodedName = decodeURIComponent(name || '');
+  const [openSlug, setOpenSlug] = useState(null);
 
   const folderCards = useMemo(() => {
-    const markdownModules = import.meta.glob('../../content/posts/**/*.md', {
+    const modules = import.meta.glob('../../content/posts/**/*.md', {
+      eager: true,
       query: '?raw',
       import: 'default',
     });
     const keepModules = import.meta.glob('../../content/posts/**/.gitkeep');
     const grouped = new Map();
 
-    const ensureFolder = (folderName) => {
-      if (!grouped.has(folderName)) {
-        grouped.set(folderName, []);
-      }
-    };
+    const ensure = (fn) => { if (!grouped.has(fn)) grouped.set(fn, []); };
 
     for (const path in keepModules) {
       const parts = path.split('/posts/')[1]?.split('/') || [];
-
-      if (parts.length >= 3 && parts[0] === decodedName) {
-        ensureFolder(parts[1]);
-      }
+      if (parts.length >= 3 && parts[0] === decodedName) ensure(parts[1]);
     }
 
-    for (const path in markdownModules) {
+    for (const [path, raw] of Object.entries(modules)) {
       const parts = path.split('/posts/')[1]?.split('/') || [];
-
       if (parts.length >= 3 && parts[0] === decodedName) {
-        const folderName = parts[1];
+        const fn = parts[1];
         const fileName = parts[parts.length - 1];
-        const title = humanize(fileName.replace(/\.md$/, ''));
-
-        ensureFolder(folderName);
-        grouped.get(folderName).push({
+        const { data } = extractFrontmatter(raw);
+        ensure(fn);
+        grouped.get(fn).push({
+          path,
           fileName,
-          title,
-          date: null,
+          slug: getPostSlugFromFileName(fileName),
+          title: data.title || getPostTitleFromFileName(fileName),
+          date: formatPostDate(data.date || data.created || data.updated),
         });
       }
     }
 
     return Array.from(grouped.entries())
-      .map(([folderName, posts]) => {
-        const sortedPosts = [...posts].sort((a, b) => sortByNumericPrefix(a.fileName, b.fileName));
-        const latest = sortedPosts[sortedPosts.length - 1];
-
-        return {
-          slug: folderName,
-          title: humanize(folderName),
-          count: posts.length,
-          latestTitle: latest?.title,
-          latestDate: formatPostDate(latest?.date),
-        };
-      })
+      .map(([fn, posts]) => ({
+        slug: fn,
+        title: humanize(fn),
+        posts: posts.sort((a, b) => sortByNumericPrefix(a.fileName, b.fileName)),
+      }))
       .sort((a, b) => a.title.localeCompare(b.title, 'ko'));
   }, [decodedName]);
 
-  const handleOpenSubcategory = (slug) => {
-    navigate(`/category/${encodeURIComponent(decodedName)}/${encodeURIComponent(slug)}`);
-  };
+  const toggle = (slug) => setOpenSlug((prev) => (prev === slug ? null : slug));
 
   return (
-    <div className="category-page blog-category-page">
-      <div className="page-header blog-category-header">
+    <div className="category-page">
+      <div className="page-header">
         <Link to="/" className="back-btn">
-          <ArrowLeft size={16} /> Back to Home
+          <ArrowLeft size={16} /> 홈으로
         </Link>
-
-        <h1 className="category-title">{humanize(decodedName)} Archive</h1>
-        <p className="category-subtitle">하위 폴더를 자동으로 불러와 카드로 렌더링합니다.</p>
+        <h1 className="page-title">{humanize(decodedName)}</h1>
+        <p className="page-subtitle">총 {folderCards.length}개의 주제</p>
       </div>
 
       {folderCards.length > 0 ? (
-        <div className="folder-card-grid">
-          {folderCards.map((folder, index) => (
-            <article
-              key={folder.slug}
-              className="folder-blog-card"
-              style={{ animationDelay: `${index * 0.06}s` }}
-              onClick={() => handleOpenSubcategory(folder.slug)}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                  event.preventDefault();
-                  handleOpenSubcategory(folder.slug);
-                }
-              }}
-              role="button"
-              tabIndex={0}
-              aria-label={`${folder.title} 폴더 열기`}
-            >
-              <div className="folder-card-main">
-                <div className="folder-blog-card-top">
-                  <span className="folder-count">{folder.count} posts</span>
-                </div>
+        <div className="accordion">
+          {folderCards.map((folder, fi) => {
+            const isOpen = openSlug === folder.slug;
+            const accent = ACCENTS[fi % ACCENTS.length];
+            return (
+              <div
+                key={folder.slug}
+                className={`accordion-item${isOpen ? ' open' : ''}`}
+                style={{ '--accent-color': accent, animationDelay: `${fi * 0.05}s` }}
+              >
+                <button
+                  className="accordion-trigger"
+                  onClick={() => toggle(folder.slug)}
+                  aria-expanded={isOpen}
+                >
+                  <div className="accordion-trigger-left">
+                    <h2 className="accordion-section-name">{folder.title}</h2>
+                    <span className="accordion-badge">{folder.posts.length}</span>
+                  </div>
+                  <ChevronDown size={17} className="accordion-chevron" />
+                </button>
 
-                <h3 className="folder-title">{folder.title}</h3>
-
-                <div className="folder-card-cta">
-                  <span>바로가기</span>
-                  <ChevronRight size={16} />
-                </div>
-              </div>
-
-              <div className="folder-card-side">
-                <div className="folder-meta-list">
-                  <p className="folder-preview">
-                    <FileText size={14} />
-                    <span>
-                      최근 포스트: {folder.latestTitle || '아직 게시글이 없습니다.'}
-                    </span>
-                  </p>
-
-                  <p className="folder-preview">
-                    <Calendar size={14} />
-                    <span>포스트 날짜: {folder.latestDate}</span>
-                  </p>
+                <div className="accordion-content">
+                  <div className="accordion-post-list">
+                    {folder.posts.map((post, pi) => (
+                      <Link
+                        key={post.path}
+                        to={`/category/${encodeURIComponent(decodedName)}/${encodeURIComponent(folder.slug)}/${encodeURIComponent(post.slug)}`}
+                        className="accordion-post-item"
+                      >
+                        <div className="accordion-post-left">
+                          <span className="accordion-post-title">{post.title}</span>
+                        </div>
+                        <span className="accordion-post-date">
+                          <Calendar size={12} />
+                          {post.date}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </article>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <div className="empty-state">
-          <BookOpen size={48} color="#6366f1" style={{ marginBottom: '1rem', opacity: 0.5 }} />
-          <h2>No folders in {decodedName} yet</h2>
-          <p>Looks like this category is currently empty.</p>
+          <BookOpen size={40} color="#6366f1" style={{ marginBottom: '1rem', opacity: 0.4 }} />
+          <h2>아직 게시글이 없습니다</h2>
+          <p>이 카테고리는 비어 있어요.</p>
         </div>
       )}
     </div>
