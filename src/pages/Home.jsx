@@ -8,7 +8,7 @@ import {
 const CATEGORIES = [
   { slug: 'CS', label: 'CS', desc: '알고리즘 · 네트워크 · 자료구조', icon: Cpu, size: 'big' },
   { slug: 'BE', label: 'Backend', desc: 'API 설계와 서버 개발', icon: Server, size: 'normal' },
-  { slug: 'FE', label: 'Frontend', desc: 'React와 웹 UI 개발', icon: MonitorPlay, size: 'normal' },
+  { slug: 'FE', label: 'Frontend', desc: '웹 UI 개발', icon: MonitorPlay, size: 'normal' },
   { slug: 'MLAI', label: 'ML / AI', desc: '머신러닝 · 딥러닝 · AI 모델', icon: Brain, size: 'big' },
   { slug: 'Database', label: 'Database', desc: 'SQL · NoSQL · 데이터 설계', icon: Database, size: 'normal' },
   { slug: 'DevOps', label: 'DevOps', desc: 'CI/CD · 인프라 · 배포 자동화', icon: Activity, size: 'normal' },
