@@ -86,7 +86,9 @@ const Home = () => (
       <div className="bento-hero-meta">
         <p className="bento-hero-desc">
           개발 공부 중 배운 것들을 정리하고<br />
-          경험을 아카이빙하는 개인 블로그입니다.
+          경험을 아카이빙하는 개인 블로그입니다.<br />
+          (현재 notion 이전공사중...)<br />
+          https://friendly-seaplane-a4d.notion.site/Tech-1ae31c6367a38076b55af14913b99826
         </p>
       </div>
     </div>
