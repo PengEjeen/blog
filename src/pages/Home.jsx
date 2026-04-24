@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Server, MonitorPlay, Activity, Cpu, Database, CloudRain, Brain,
+  Server, MonitorPlay, Activity, Cpu, Database, CloudRain, Brain, Folder,
 } from 'lucide-react';
 
 /* ─ Bento Cards ──────────────────────────────────────────────────────── */
@@ -13,6 +13,7 @@ const CATEGORIES = [
   { slug: 'Database', label: 'Database', desc: 'SQL · NoSQL · 데이터 설계', icon: Database, size: 'normal' },
   { slug: 'DevOps', label: 'DevOps', desc: 'CI/CD · 인프라 · 배포 자동화', icon: Activity, size: 'normal' },
   { slug: 'Cloud', label: 'Cloud', desc: 'AWS · GCP · 클라우드 아키텍처', icon: CloudRain, size: 'normal' },
+  { slug: '기타', label: '기타', desc: '프로젝트 메모 · 분류 보류', icon: Folder, size: 'normal' },
 ];
 
 /* ─ FIDS: Airport Departure Board ───────────────────────────────────── */
