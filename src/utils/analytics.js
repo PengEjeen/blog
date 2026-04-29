@@ -28,21 +28,24 @@ const loadScript = () => {
   return scriptLoading;
 };
 
+const normalizePath = (p) => {
+  try { return decodeURIComponent(p); } catch { return p; }
+};
+
 export const trackPageView = async (path) => {
   if (!CODE) return;
   const gc = await loadScript();
   if (!gc || typeof gc.count !== 'function') return;
   gc.count({
-    path,
+    path: normalizePath(path),
     event: false,
-    // bypass session-dedupe so every mount counts
     title: document.title,
   });
 };
 
 export const fetchPathCount = async (path) => {
   if (!CODE) return null;
-  const url = `${HOST}/counter/${encodeURIComponent(path)}.json`;
+  const url = `${HOST}/counter/${encodeURIComponent(normalizePath(path))}.json`;
   try {
     const res = await fetch(url, { credentials: 'omit' });
     // 404/4xx는 "아직 기록된 적 없음" → 0으로 취급. 5xx/네트워크 에러만 null로.
