@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Server, MonitorPlay, Activity, Cpu, Database, CloudRain, Brain, Folder,
+  Server, MonitorPlay, Activity, Cpu, Database, CloudRain, Brain, Folder, ExternalLink,
 } from 'lucide-react';
+import { usePageTitle } from '../utils/usePageTitle';
 
 /* ─ Bento Cards ──────────────────────────────────────────────────────── */
 const CATEGORIES = [
@@ -62,7 +63,7 @@ const FIDSBoard = () => {
 
         {/* Rows */}
         {FLIGHTS.map((f, i) => (
-          <div key={i} className={`fids-row${i === 2 ? ' fids-row--active' : ''}`}>
+          <div key={f.code} className={`fids-row${i === 2 ? ' fids-row--active' : ''}`}>
             <span className="fids-dest">{f.destination}</span>
             <span className="fids-code">{f.code}</span>
             <span className="fids-time">{f.time}</span>
@@ -76,7 +77,9 @@ const FIDSBoard = () => {
 };
 
 /* ─ Home Page ────────────────────────────────────────────────────────── */
-const Home = () => (
+const Home = () => {
+  usePageTitle();
+  return (
   <div className="home-container">
     {/* Hero */}
     <div className="bento-hero">
@@ -87,10 +90,18 @@ const Home = () => (
       <div className="bento-hero-meta">
         <p className="bento-hero-desc">
           개발 공부 중 배운 것들을 정리하고<br />
-          경험을 아카이빙하는 개인 블로그입니다.<br />
-          (현재 notion 이전공사중...)<br />
-          https://friendly-seaplane-a4d.notion.site/Tech-1ae31c6367a38076b55af14913b99826
+          경험을 아카이빙하는 개인 블로그입니다.
         </p>
+        <a
+          className="bento-hero-link"
+          href="https://friendly-seaplane-a4d.notion.site/Tech-1ae31c6367a38076b55af14913b99826"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <span className="bento-hero-link-tag">Notion 이전 중</span>
+          <span className="bento-hero-link-label">기존 Tech 노트 보기</span>
+          <ExternalLink size={13} />
+        </a>
       </div>
     </div>
 
@@ -120,6 +131,7 @@ const Home = () => (
       <FIDSBoard />
     </div>
   </div>
-);
+  );
+};
 
 export default Home;

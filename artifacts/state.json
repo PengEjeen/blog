@@ -1,0 +1,37 @@
+{
+  "goal": "GoatCounter 통합 — 페이지뷰 표시 (글마다, 압축 X, 모든 로드)",
+  "iteration": 5,
+  "max_iterations": 5,
+  "status": "passed",
+  "plan": [
+    "src/utils/analytics.js: GoatCounter script 동적 로드 + count + counter API",
+    "src/components/ViewCount.jsx: 조회수 배지 (Eye 아이콘 + 1,234회 ko-KR)",
+    "src/pages/Post.jsx: 메타 줄에 ViewCount 통합",
+    "style: .view-count pill",
+    ".env.example + .gitignore: VITE_GOATCOUNTER_CODE 가이드",
+    "build/lint 통과"
+  ],
+  "build_log": [
+    "create src/utils/analytics.js",
+    "create src/components/ViewCount.jsx",
+    "edit src/pages/Post.jsx (ViewCount mount)",
+    "extend src/style.css (.view-count)",
+    "create .env.example",
+    "edit .gitignore (.env)"
+  ],
+  "eval": {
+    "passed": true,
+    "build": "ok (vite 1.15s, Post 청크 +1.7KB)",
+    "lint": "clean",
+    "setup_required": [
+      "1. https://www.goatcounter.com/signup 가입 후 site code 받기",
+      "2. Settings → Allow viewing your stats → public access 켜기 (count 노출에 필요)",
+      "3. .env.local에 VITE_GOATCOUNTER_CODE=YOUR_CODE 설정",
+      "4. npm run build → 끝"
+    ],
+    "notes": [
+      "VITE_GOATCOUNTER_CODE 비어있으면 스크립트/표시 모두 no-op (안전)",
+      "GoatCounter는 서버단에서 같은 IP+path 30분 dedup. 진짜 모든 새로고침 카운트는 GoatCounter 정책상 불가 — 통계적 의미의 pageview로 동작"
+    ]
+  }
+}

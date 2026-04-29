@@ -1,5 +1,89 @@
 export const humanize = (value = '') => value.replace(/_/g, ' ');
 
+let _indexCache = null;
+
+const POSTS_GLOB = import.meta.glob('../../content/posts/**/*.md', {
+  eager: true,
+  query: '?raw',
+  import: 'default',
+});
+
+export const getPostsIndex = () => {
+  if (_indexCache) return _indexCache;
+
+  const categories = new Map();
+  const ensureCategory = (cat) => {
+    if (!categories.has(cat)) categories.set(cat, { slug: cat, count: 0, subs: new Map() });
+    return categories.get(cat);
+  };
+
+  const posts = [];
+  for (const [path, raw] of Object.entries(POSTS_GLOB)) {
+    const parts = path.split('/posts/')[1]?.split('/') || [];
+    if (parts.length < 3) continue;
+    const [cat, sub, fileName] = [parts[0], parts[1], parts[parts.length - 1]];
+    const { data, content } = extractFrontmatter(raw);
+    const slug = getPostSlugFromFileName(fileName);
+    const dateRaw = data.date || data.created || data.updated || '';
+    const cEntry = ensureCategory(cat);
+    cEntry.count += 1;
+    if (!cEntry.subs.has(sub)) cEntry.subs.set(sub, { slug: sub, count: 0 });
+    cEntry.subs.get(sub).count += 1;
+    posts.push({
+      path,
+      cat,
+      sub,
+      slug,
+      fileName,
+      title: data.title || getPostTitleFromFileName(fileName),
+      dateRaw,
+      dateLabel: formatPostDate(dateRaw),
+      excerpt: content.slice(0, 280),
+      searchHay: `${data.title || ''} ${cat} ${sub} ${content.slice(0, 1500)}`.toLowerCase(),
+    });
+  }
+
+  posts.sort((a, b) => {
+    const da = new Date(a.dateRaw).getTime();
+    const db = new Date(b.dateRaw).getTime();
+    if (Number.isNaN(da) && Number.isNaN(db)) return 0;
+    if (Number.isNaN(da)) return 1;
+    if (Number.isNaN(db)) return -1;
+    return db - da;
+  });
+
+  _indexCache = {
+    categories: Array.from(categories.values())
+      .map((c) => ({ slug: c.slug, count: c.count, subs: Array.from(c.subs.values()) }))
+      .sort((a, b) => a.slug.localeCompare(b.slug, 'ko')),
+    posts,
+    total: posts.length,
+  };
+  return _indexCache;
+};
+
+export const searchPosts = (query, limit = 8) => {
+  const q = (query || '').trim().toLowerCase();
+  if (!q) return [];
+  const tokens = q.split(/\s+/).filter(Boolean);
+  const { posts } = getPostsIndex();
+  const scored = [];
+  for (const post of posts) {
+    let score = 0;
+    let matched = true;
+    for (const token of tokens) {
+      const inTitle = post.title.toLowerCase().includes(token);
+      const inHay = post.searchHay.includes(token);
+      if (!inTitle && !inHay) { matched = false; break; }
+      if (inTitle) score += 4;
+      if (inHay) score += 1;
+    }
+    if (matched) scored.push({ post, score });
+  }
+  scored.sort((a, b) => b.score - a.score);
+  return scored.slice(0, limit).map((s) => s.post);
+};
+
 export const sortByNumericPrefix = (a, b) => {
   const matchA = a.match(/^(\d+)/);
   const matchB = b.match(/^(\d+)/);
@@ -190,11 +274,27 @@ const renderInlineMarkdown = (value = '') => {
   const escaped = escapeHtml(value);
 
   return escaped
-    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" />')
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" loading="lazy" decoding="async" />')
     .replace(/`([^`]+)`/g, '<code>$1</code>')
     .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
     .replace(/\*([^*]+)\*/g, '<em>$1</em>')
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer">$1</a>');
+};
+
+export const slugify = (value = '') =>
+  value
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/[^\p{Letter}\p{Number}\s-]+/gu, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+
+const buildHeadingHtml = (level, rawText) => {
+  const id = slugify(rawText) || `h${level}-${Math.random().toString(36).slice(2, 7)}`;
+  const inner = renderInlineMarkdown(rawText);
+  return `<h${level} id="${id}" class="markdown-heading"><a href="#${id}" class="markdown-anchor" aria-label="섹션 링크">#</a>${inner}</h${level}>`;
 };
 
 const isTableSeparatorRow = (line = '') => /^\s*\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?\s*$/.test(line);
@@ -235,8 +335,18 @@ export const markdownToHtml = (raw = '') => {
     if (codeFence) {
       const normalizedLanguage = normalizeLanguage(codeLanguage);
       const languageClass = normalizedLanguage ? ` class="language-${normalizedLanguage}"` : '';
-      const highlightedCode = highlightCodeBlock(codeLines.join('\n'), normalizedLanguage);
-      html.push(`<pre><code${languageClass}>${highlightedCode}</code></pre>`);
+      const rawCode = codeLines.join('\n');
+      const highlightedCode = highlightCodeBlock(rawCode, normalizedLanguage);
+      const langTag = normalizedLanguage
+        ? `<span class="codeblock-lang">${escapeHtml(normalizedLanguage)}</span>`
+        : '';
+      const encoded = escapeHtml(rawCode);
+      html.push(
+        `<div class="codeblock" data-code="${encoded}">`
+        + `<div class="codeblock-toolbar">${langTag}<button type="button" class="codeblock-copy" data-copy aria-label="코드 복사">Copy</button></div>`
+        + `<pre><code${languageClass}>${highlightedCode}</code></pre>`
+        + '</div>',
+      );
       codeFence = false;
       codeLines = [];
       codeLanguage = '';
@@ -309,7 +419,7 @@ export const markdownToHtml = (raw = '') => {
       closeParagraph();
       closeList();
       const level = heading[1].length;
-      html.push(`<h${level}>${renderInlineMarkdown(heading[2])}</h${level}>`);
+      html.push(buildHeadingHtml(level, heading[2]));
       continue;
     }
 
@@ -363,14 +473,22 @@ export const resolveMarkdownAssetUrls = (html = '', markdownPath = '', assetMap 
 
   const directory = markdownPath.slice(0, markdownPath.lastIndexOf('/') + 1);
 
-  return html.replace(/<img src="([^"]+)" alt="([^"]*)" \/>/g, (full, src, alt) => {
+  return html.replace(/<img\s+([^>]*?)\s*\/?>/g, (full, attrs) => {
+    const srcMatch = attrs.match(/\bsrc="([^"]+)"/);
+    if (!srcMatch) return full;
+    const src = srcMatch[1];
     if (!src.startsWith('./') && !src.startsWith('../')) {
       return full;
     }
 
-    const normalizedPath = decodeURIComponent(
-      new URL(src, `https://local/${directory}`).pathname.slice(1),
-    );
+    let normalizedPath;
+    try {
+      normalizedPath = decodeURIComponent(
+        new URL(src, `https://local/${directory}`).pathname.slice(1),
+      );
+    } catch {
+      return full;
+    }
     const key = `../../${normalizedPath}`;
     const resolved = assetMap[key];
 
@@ -378,6 +496,7 @@ export const resolveMarkdownAssetUrls = (html = '', markdownPath = '', assetMap 
       return full;
     }
 
-    return `<img src="${resolved}" alt="${alt}" />`;
+    const newAttrs = attrs.replace(/\bsrc="[^"]+"/, `src="${resolved}"`);
+    return `<img ${newAttrs} />`;
   });
 };

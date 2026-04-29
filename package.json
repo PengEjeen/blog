@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "node scripts/generate-feeds.js",
     "build": "vite build",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "feeds": "node scripts/generate-feeds.js",
+    "lint": "eslint . --report-unused-disable-directives",
     "preview": "vite preview"
   },
   "dependencies": {

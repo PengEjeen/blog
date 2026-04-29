@@ -1,24 +1,48 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
+import Sidebar from './components/Sidebar';
+import Footer from './components/Footer';
 import Home from './pages/Home';
-import Category from './pages/Category';
-import Subcategory from './pages/Subcategory';
-import Post from './pages/Post';
+import { ThemeProvider } from './utils/theme';
+import { SidebarProvider } from './utils/sidebar';
+
+const Category = lazy(() => import('./pages/Category'));
+const Subcategory = lazy(() => import('./pages/Subcategory'));
+const Post = lazy(() => import('./pages/Post'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+
+const RouteFallback = () => (
+  <div className="route-fallback" aria-live="polite">
+    <span className="route-fallback-spinner" />
+    <span>로딩 중…</span>
+  </div>
+);
 
 function App() {
   return (
-    <div className="app-container">
-      <Header />
-      <main className="main-content">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/category/:name" element={<Category />} />
-          <Route path="/category/:name/:subcategory" element={<Subcategory />} />
-          <Route path="/category/:name/:subcategory/:post" element={<Post />} />
-        </Routes>
-      </main>
-    </div>
+    <ThemeProvider>
+      <SidebarProvider>
+        <div className="app-container">
+          <Header />
+          <div className="layout">
+            <Sidebar />
+            <main className="main-content">
+              <Suspense fallback={<RouteFallback />}>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/category/:name" element={<Category />} />
+                  <Route path="/category/:name/:subcategory" element={<Subcategory />} />
+                  <Route path="/category/:name/:subcategory/:post" element={<Post />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Suspense>
+            </main>
+          </div>
+          <Footer />
+        </div>
+      </SidebarProvider>
+    </ThemeProvider>
   );
 }
 

@@ -2,15 +2,12 @@ import React, { useMemo, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, BookOpen, ChevronDown, Calendar } from 'lucide-react';
 import {
-  extractFrontmatter,
-  formatPostDate,
-  getPostSlugFromFileName,
-  getPostTitleFromFileName,
+  getPostsIndex,
   humanize,
   sortByNumericPrefix,
 } from '../utils/posts';
+import { usePageTitle } from '../utils/usePageTitle';
 
-// one accent color per section, cycling
 const ACCENTS = [
   '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6',
   '#ef4444', '#0ea5e9', '#f97316', '#6366f1',
@@ -22,48 +19,29 @@ const Category = () => {
   const [openSlug, setOpenSlug] = useState(null);
 
   const folderCards = useMemo(() => {
-    const modules = import.meta.glob('../../content/posts/**/*.md', {
-      eager: true,
-      query: '?raw',
-      import: 'default',
+    const { categories, posts } = getPostsIndex();
+    const cat = categories.find((c) => c.slug === decodedName);
+    const folderMap = new Map();
+    if (cat) {
+      cat.subs.forEach((s) => folderMap.set(s.slug, []));
+    }
+    posts.forEach((p) => {
+      if (p.cat !== decodedName) return;
+      if (!folderMap.has(p.sub)) folderMap.set(p.sub, []);
+      folderMap.get(p.sub).push(p);
     });
-    const keepModules = import.meta.glob('../../content/posts/**/.gitkeep');
-    const grouped = new Map();
 
-    const ensure = (fn) => { if (!grouped.has(fn)) grouped.set(fn, []); };
-
-    for (const path in keepModules) {
-      const parts = path.split('/posts/')[1]?.split('/') || [];
-      if (parts.length >= 3 && parts[0] === decodedName) ensure(parts[1]);
-    }
-
-    for (const [path, raw] of Object.entries(modules)) {
-      const parts = path.split('/posts/')[1]?.split('/') || [];
-      if (parts.length >= 3 && parts[0] === decodedName) {
-        const fn = parts[1];
-        const fileName = parts[parts.length - 1];
-        const { data } = extractFrontmatter(raw);
-        ensure(fn);
-        grouped.get(fn).push({
-          path,
-          fileName,
-          slug: getPostSlugFromFileName(fileName),
-          title: data.title || getPostTitleFromFileName(fileName),
-          date: formatPostDate(data.date || data.created || data.updated),
-        });
-      }
-    }
-
-    return Array.from(grouped.entries())
-      .map(([fn, posts]) => ({
+    return Array.from(folderMap.entries())
+      .map(([fn, list]) => ({
         slug: fn,
         title: humanize(fn),
-        posts: posts.sort((a, b) => sortByNumericPrefix(a.fileName, b.fileName)),
+        posts: list.slice().sort((a, b) => sortByNumericPrefix(a.fileName, b.fileName)),
       }))
       .sort((a, b) => a.title.localeCompare(b.title, 'ko'));
   }, [decodedName]);
 
   const toggle = (slug) => setOpenSlug((prev) => (prev === slug ? null : slug));
+  usePageTitle(humanize(decodedName));
 
   return (
     <div className="category-page">
@@ -100,7 +78,7 @@ const Category = () => {
 
                 <div className="accordion-content">
                   <div className="accordion-post-list">
-                    {folder.posts.map((post, pi) => (
+                    {folder.posts.map((post) => (
                       <Link
                         key={post.path}
                         to={`/category/${encodeURIComponent(decodedName)}/${encodeURIComponent(folder.slug)}/${encodeURIComponent(post.slug)}`}
@@ -111,7 +89,7 @@ const Category = () => {
                         </div>
                         <span className="accordion-post-date">
                           <Calendar size={12} />
-                          {post.date}
+                          {post.dateLabel}
                         </span>
                       </Link>
                     ))}

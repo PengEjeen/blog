@@ -2,13 +2,11 @@ import React, { useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, FileText, Calendar } from 'lucide-react';
 import {
-  extractFrontmatter,
-  formatPostDate,
-  getPostSlugFromFileName,
-  getPostTitleFromFileName,
+  getPostsIndex,
   humanize,
   sortByNumericPrefix,
 } from '../utils/posts';
+import { usePageTitle } from '../utils/usePageTitle';
 
 const Subcategory = () => {
   const { name, subcategory } = useParams();
@@ -16,30 +14,14 @@ const Subcategory = () => {
   const decodedSubcategory = decodeURIComponent(subcategory || '');
 
   const posts = useMemo(() => {
-    const modules = import.meta.glob('../../content/posts/**/*.md', {
-      eager: true,
-      query: '?raw',
-      import: 'default',
-    });
-    const matchedPosts = [];
-
-    for (const [path, raw] of Object.entries(modules)) {
-      const parts = path.split('/posts/')[1]?.split('/') || [];
-      if (parts.length >= 3 && parts[0] === decodedName && parts[1] === decodedSubcategory) {
-        const fileName = parts[parts.length - 1];
-        const { data } = extractFrontmatter(raw);
-        matchedPosts.push({
-          path,
-          fileName,
-          slug: getPostSlugFromFileName(fileName),
-          title: data.title || getPostTitleFromFileName(fileName),
-          date: formatPostDate(data.date || data.created || data.updated),
-        });
-      }
-    }
-
-    return matchedPosts.sort((a, b) => sortByNumericPrefix(a.fileName, b.fileName));
+    const { posts: all } = getPostsIndex();
+    return all
+      .filter((p) => p.cat === decodedName && p.sub === decodedSubcategory)
+      .slice()
+      .sort((a, b) => sortByNumericPrefix(a.fileName, b.fileName));
   }, [decodedName, decodedSubcategory]);
+
+  usePageTitle(`${humanize(decodedSubcategory)} — ${humanize(decodedName)}`);
 
   return (
     <div className="category-page">
@@ -66,7 +48,7 @@ const Subcategory = () => {
               </div>
               <div className="post-list-date">
                 <Calendar size={13} />
-                <span>{post.date}</span>
+                <span>{post.dateLabel}</span>
               </div>
             </Link>
           ))

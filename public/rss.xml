@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>PenGejeen&apos;s Blog</title>
+    <link>https://pengejeen.github.io/blog</link>
+    <description>개발 공부 중 배운 것들을 정리하고 경험을 아카이빙하는 개인 블로그.</description>
+    <language>ko-KR</language>
+    <lastBuildDate>Wed, 29 Apr 2026 07:49:16 GMT</lastBuildDate>
+    <atom:link href="https://pengejeen.github.io/blog/rss.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Supervisord</title>
+      <link>https://pengejeen.github.io/blog/category/DevOps/NGINX/Supervisord</link>
+      <guid isPermaLink="true">https://pengejeen.github.io/blog/category/DevOps/NGINX/Supervisord</guid>
+      <pubDate>Mon, 27 Apr 2026 03:34:38 GMT</pubDate>
+      <category>DevOps</category>
+      <description># [Nginx]Supervisord # **About supervisor** supervisor는 여러 프로세스를 모니터링-관리하며 데몬 형식으로 지속적으로 동작해야 하는 프로세스가 있을 경우 유용하게 사용할 수 있다 데몬은 서버(시스템)이 살아있는 동안 항상 실행되어야 하는 백그라운드 프로세스이다. Supervisor 란? - supervisor가 프로세스에 대해 지속적으로 모니터링 하고, 프로세스가 예기치 않게 종료되어도 재구동하며 지속적으로 동작하도록 돕는 도구이다. - 또한 여러</description>
+    </item>
+    <item>
+      <title>1장 Keycloak 개요</title>
+      <link>https://pengejeen.github.io/blog/category/DevOps/Keycloak/1.Keycloak_%EA%B0%9C%EC%9A%94</link>
+      <guid isPermaLink="true">https://pengejeen.github.io/blog/category/DevOps/Keycloak/1.Keycloak_%EA%B0%9C%EC%9A%94</guid>
+      <pubDate>Mon, 27 Apr 2026 00:00:00 GMT</pubDate>
+      <category>DevOps</category>
+      <description># 1. Keycloak 개요 ## 1.1 Keycloak이란? Keycloak은 오픈소스 IAM(Identity and Access Management) 솔루션이다. 애플리케이션의 로그인, SSO 세션, 사용자 정보, 권한(role) 정책을 중앙에서 관리하게 해준다. 핵심은 앱마다 인증 코드를 직접 구현하지 않고, OIDC/OAuth2 표준 기반 인증 서버를 분리해 쓰는 것이다. 조금 더 쉽게 말하면, Keycloak은 서비스 밖에 따로 세우는 인증 전용 서버다. 사용자는 Keycloa</description>
+    </item>
+    <item>
+      <title>2장 로컬에서 Keycloak 띄우기</title>
+      <link>https://pengejeen.github.io/blog/category/DevOps/Keycloak/2.%EB%A1%9C%EC%BB%AC%EC%97%90%EC%84%9C_Keycloak_%EB%9D%84%EC%9A%B0%EA%B8%B0</link>
+      <guid isPermaLink="true">https://pengejeen.github.io/blog/category/DevOps/Keycloak/2.%EB%A1%9C%EC%BB%AC%EC%97%90%EC%84%9C_Keycloak_%EB%9D%84%EC%9A%B0%EA%B8%B0</guid>
+      <pubDate>Mon, 27 Apr 2026 00:00:00 GMT</pubDate>
+      <category>DevOps</category>
+      <description># 2. 로컬에서 Keycloak 띄우기 Keycloak을 처음 테스트할 때는 `start-dev`만으로도 실행할 수 있다. 다만 실제 프로젝트에 붙일 목적이라면 처음부터 DB를 분리해서 보는 편이 낫다. Keycloak은 사용자, realm, client, role, session 같은 설정을 저장해야 하므로 운영에서는 외부 데이터베이스가 필요하다. 이 글에서는 PostgreSQL을 붙여 로컬 환경을 구성한다. 완전한 운영 설정은 아니지만, &quot;컨테이너 하나 띄워서 로그인 화면만 보는 수준&quot;보</description>
+    </item>
+    <item>
+      <title>3장 Realm / Client / Role 최소 설정</title>
+      <link>https://pengejeen.github.io/blog/category/DevOps/Keycloak/3.Realm_Client_Role_%EC%B5%9C%EC%86%8C_%EC%84%A4%EC%A0%95</link>
+      <guid isPermaLink="true">https://pengejeen.github.io/blog/category/DevOps/Keycloak/3.Realm_Client_Role_%EC%B5%9C%EC%86%8C_%EC%84%A4%EC%A0%95</guid>
+      <pubDate>Mon, 27 Apr 2026 00:00:00 GMT</pubDate>
+      <category>DevOps</category>
+      <description># 3. Realm / Client / Role 최소 설정 Keycloak을 처음 만지면 용어가 가장 헷갈린다. 특히 Realm, Client, Role의 경계를 제대로 이해하지 못하면 로그인은 되는데 세션에 권한 정보가 없거나, redirect URL이 계속 실패하거나, callback 처리에서 사용자 정보를 제대로 만들지 못하는 문제가 생긴다. 이 장에서는 실제 프로젝트에서 가장 먼저 잡아야 하는 최소 구조를 정리한다. ## 3.1 Realm Realm은 Keycloak에서 가장 큰 논리</description>
+    </item>
+    <item>
+      <title>4장 React에서 세션 로그인 붙이기</title>
+      <link>https://pengejeen.github.io/blog/category/DevOps/Keycloak/4.React%EC%97%90%EC%84%9C_%EC%84%B8%EC%85%98_%EB%A1%9C%EA%B7%B8%EC%9D%B8_%EB%B6%99%EC%9D%B4%EA%B8%B0</link>
+      <guid isPermaLink="true">https://pengejeen.github.io/blog/category/DevOps/Keycloak/4.React%EC%97%90%EC%84%9C_%EC%84%B8%EC%85%98_%EB%A1%9C%EA%B7%B8%EC%9D%B8_%EB%B6%99%EC%9D%B4%EA%B8%B0</guid>
+      <pubDate>Mon, 27 Apr 2026 00:00:00 GMT</pubDate>
+      <category>DevOps</category>
+      <description># 4. React에서 세션 로그인 붙이기 내가 사용한 방식은 React가 Keycloak 토큰을 직접 들고 다니는 구조가 아니었다. React는 로그인 버튼을 누르면 백엔드의 로그인 endpoint로 이동하고, 백엔드가 Keycloak으로 redirect한다. 로그인 성공 후에는 Django가 서버 세션을 만들고, React는 세션 쿠키로 API를 호출한다. 이 방식의 핵심은 브라우저에 Access Token이나 Refresh Token을 저장하지 않는다는 점이다. 프런트엔드는 인증 상태를 </description>
+    </item>
+    <item>
+      <title>5장 Django에서 Keycloak Session 처리하기</title>
+      <link>https://pengejeen.github.io/blog/category/DevOps/Keycloak/5.Django%EC%97%90%EC%84%9C_Keycloak_Session_%EC%B2%98%EB%A6%AC%ED%95%98%EA%B8%B0</link>
+      <guid isPermaLink="true">https://pengejeen.github.io/blog/category/DevOps/Keycloak/5.Django%EC%97%90%EC%84%9C_Keycloak_Session_%EC%B2%98%EB%A6%AC%ED%95%98%EA%B8%B0</guid>
+      <pubDate>Mon, 27 Apr 2026 00:00:00 GMT</pubDate>
+      <category>DevOps</category>
+      <description># 5. Django에서 Keycloak Session 처리하기 세션 기반 구조에서는 Django가 OIDC client 역할을 한다. React가 Keycloak token을 직접 받는 것이 아니라, Django가 Keycloak callback을 처리하고 Django session을 생성한다. 이 방식에서도 OIDC 내부적으로는 authorization code와 token 교환이 일어난다. 하지만 이 token은 백엔드 내부에서 사용자 확인 용도로만 사용하고, 브라우저에는 Django 세</description>
+    </item>
+    <item>
+      <title>6장 자주 겪은 장애 4가지</title>
+      <link>https://pengejeen.github.io/blog/category/DevOps/Keycloak/6.%EC%9E%90%EC%A3%BC_%EA%B2%AA%EC%9D%80_%EC%9E%A5%EC%95%A0_4%EA%B0%80%EC%A7%80</link>
+      <guid isPermaLink="true">https://pengejeen.github.io/blog/category/DevOps/Keycloak/6.%EC%9E%90%EC%A3%BC_%EA%B2%AA%EC%9D%80_%EC%9E%A5%EC%95%A0_4%EA%B0%80%EC%A7%80</guid>
+      <pubDate>Mon, 27 Apr 2026 00:00:00 GMT</pubDate>
+      <category>DevOps</category>
+      <description># 6. 자주 겪은 장애 4가지 Keycloak 연동에서 어려운 부분은 코드보다 설정이다. 세션 기반 구조에서도 여러 URL, client 설정, callback 처리, 브라우저 redirect가 맞물려 돌아간다. 그래서 설정 하나가 어긋나면 에러 메시지만 보고 원인을 찾기 어렵다. 이 장에서는 내가 실제로 자주 만난 문제를 기준으로 증상, 원인, 해결 방법을 정리한다. ## 6.1 `invalid redirect_uri` `invalid redirect_uri`는 Keycloak을 처음 붙</description>
+    </item>
+    <item>
+      <title>7장 운영 적용 체크리스트</title>
+      <link>https://pengejeen.github.io/blog/category/DevOps/Keycloak/7.%EC%9A%B4%EC%98%81_%EC%A0%81%EC%9A%A9_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8</link>
+      <guid isPermaLink="true">https://pengejeen.github.io/blog/category/DevOps/Keycloak/7.%EC%9A%B4%EC%98%81_%EC%A0%81%EC%9A%A9_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8</guid>
+      <pubDate>Mon, 27 Apr 2026 00:00:00 GMT</pubDate>
+      <category>DevOps</category>
+      <description># 7. 운영 적용 체크리스트 로컬에서 Keycloak 로그인이 성공했다고 해서 바로 운영에 올릴 수 있는 것은 아니다. Keycloak은 인증 서버이기 때문에 장애가 나면 전체 서비스 로그인이 막히고, 설정이 잘못되면 보안 사고로 이어질 수 있다. 운영 적용 전에는 아래 항목을 최소 기준으로 점검한다. ## 7.1 HTTPS 강제 운영 환경에서는 `http`를 사용하면 안 된다. 세션 쿠키가 탈취되면 실제 사용자로 요청을 보낼 수 있기 때문에 반드시 HTTPS 위에서 주고받아야 한다. K</description>
+    </item>
+    <item>
+      <title>8장 빠른 검증 커맨드</title>
+      <link>https://pengejeen.github.io/blog/category/DevOps/Keycloak/8.%EB%B9%A0%EB%A5%B8_%EA%B2%80%EC%A6%9D_%EC%BB%A4%EB%A7%A8%EB%93%9C</link>
+      <guid isPermaLink="true">https://pengejeen.github.io/blog/category/DevOps/Keycloak/8.%EB%B9%A0%EB%A5%B8_%EA%B2%80%EC%A6%9D_%EC%BB%A4%EB%A7%A8%EB%93%9C</guid>
+      <pubDate>Mon, 27 Apr 2026 00:00:00 GMT</pubDate>
+      <category>DevOps</category>
+      <description># 8. 빠른 검증 커맨드 Keycloak 연동이 막혔을 때는 Admin Console만 보지 말고 OIDC endpoint를 직접 확인하는 것이 빠르다. 세션 기반 구조에서도 Django는 Keycloak authorization endpoint, token endpoint, userinfo endpoint를 사용한다. 먼저 Keycloak이 어떤 메타데이터를 제공하는지 확인해야 한다. 이 장의 명령어는 로컬 검증용이다. 운영 client secret이나 authorization code를 </description>
+    </item>
+    <item>
+      <title>9장 정리</title>
+      <link>https://pengejeen.github.io/blog/category/DevOps/Keycloak/9.%EC%A0%95%EB%A6%AC</link>
+      <guid isPermaLink="true">https://pengejeen.github.io/blog/category/DevOps/Keycloak/9.%EC%A0%95%EB%A6%AC</guid>
+      <pubDate>Mon, 27 Apr 2026 00:00:00 GMT</pubDate>
+      <category>DevOps</category>
+      <description># 9. 정리 Keycloak 도입의 핵심은 &quot;로그인 기능 추가&quot;가 아니라 &quot;인증/인가 정책을 애플리케이션 코드 밖으로 분리&quot;하는 데 있다. 내 경험 기준으로는 아래 3가지만 지키면 시행착오가 크게 줄었다. 1. 프런트는 `Authorization Code + PKCE` 고정 2. 백엔드는 Keycloak callback을 처리한 뒤 Django 세션 생성 3. redirect/logout URL과 세션 쿠키 정책을 초기에 표준화 이 세 가지를 지키면 구조가 단순해진다. 프런트엔드는 로그인</description>
+    </item>
+    <item>
+      <title>LLM 개요</title>
+      <link>https://pengejeen.github.io/blog/category/AI/LLM/1.LLM</link>
+      <guid isPermaLink="true">https://pengejeen.github.io/blog/category/AI/LLM/1.LLM</guid>
+      <pubDate>Fri, 24 Apr 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description># LLM LLM 학습·환경·파인튜닝 메모와 링크 모음. ## 0. 저장소 - gitlab - [https://gitlab.com/chony5093/paimon_ai](https://gitlab.com/chony5093/paimon_ai) ## 1. 참고 학습 자료 - [https://seungbeomdo.tistory.com/78](https://seungbeomdo.tistory.com/78) - [https://wikidocs.net/156950](https://wikidocs.ne</description>
+    </item>
+    <item>
+      <title>RNN(Recurrent Neural Network) 개요</title>
+      <link>https://pengejeen.github.io/blog/category/AI/LLM/2.RNN_%EA%B0%9C%EC%9A%94</link>
+      <guid isPermaLink="true">https://pengejeen.github.io/blog/category/AI/LLM/2.RNN_%EA%B0%9C%EC%9A%94</guid>
+      <pubDate>Fri, 24 Apr 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description># RNN(Recurrent Neural Network) 개요 참고 - [https://brightwon.tistory.com/10](https://brightwon.tistory.com/10) ## 1. 개요 - 연속된 데이터, 즉 순차 데이터 사용 - 시계열 특성을 지닌 데이터 학습 ![RNN 구조](./assets/2-1.png) - 이전 상태로부터 전달된 값을 **히든 스테이트**라고 함. → 이는 현재의 영향을 받아 매번 갱신 - 현재 타임 스텝의 **히든 스테이트 ht**는 *</description>
+    </item>
+    <item>
+      <title>fine tuning 개요</title>
+      <link>https://pengejeen.github.io/blog/category/AI/LLM/3.fine_tuning_%EA%B0%9C%EC%9A%94</link>
+      <guid isPermaLink="true">https://pengejeen.github.io/blog/category/AI/LLM/3.fine_tuning_%EA%B0%9C%EC%9A%94</guid>
+      <pubDate>Fri, 24 Apr 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description># Fine tuning 개요 참고 - [https://seungbeomdo.tistory.com/79](https://seungbeomdo.tistory.com/79) &gt; Fine tuning이란 pre-trained 모델을 **구체적인 태스크에 맞게 추가 훈련**하는 과정. ## 1. Fine tuning 방법 - **end-to-end** — 주어진 pre-trained 모델의 **모든 레이어**를 추가 훈련 - **Freezing** — 일부 레이어는 그대로 두고 일부 레이어만 추가</description>
+    </item>
+    <item>
+      <title>gpt-2</title>
+      <link>https://pengejeen.github.io/blog/category/AI/LLM/4.gpt-2</link>
+      <guid isPermaLink="true">https://pengejeen.github.io/blog/category/AI/LLM/4.gpt-2</guid>
+      <pubDate>Fri, 24 Apr 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description># gpt-2 &gt; 이 페이지는 작성 예정입니다. (Notion 원본도 비어 있음 — placeholder) ## 학습할 항목 - GPT-2 모델 구조 (decoder-only Transformer) - 토크나이저 (BPE) - 사전훈련 / 파인튜닝 흐름 - HuggingFace `transformers` 로드 및 추론 예제 - 텍스트 생성 옵션 (temperature, top-k, top-p, repetition penalty)</description>
+    </item>
+    <item>
+      <title>Llama3</title>
+      <link>https://pengejeen.github.io/blog/category/AI/LLM/5.Llama3</link>
+      <guid isPermaLink="true">https://pengejeen.github.io/blog/category/AI/LLM/5.Llama3</guid>
+      <pubDate>Fri, 24 Apr 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description># Llama3 (with NVIDIA TensorRT-LLM) 튜토리얼 - [NVIDIA Developer Blog: Turbocharging Meta Llama 3 Performance with TensorRT-LLM and Triton](https://developer.nvidia.com/ko-kr/blog/turbocharging-meta-llama-3-performance-with-nvidia-tensorrt-llm-and-nvidia-triton-inference-server/) N</description>
+    </item>
+    <item>
+      <title>검색 증강 생성 RAG (Retrieval-Augmented Generation)</title>
+      <link>https://pengejeen.github.io/blog/category/AI/LLM/6.RAG_%EA%B2%80%EC%83%89_%EC%A6%9D%EA%B0%95_%EC%83%9D%EC%84%B1</link>
+      <guid isPermaLink="true">https://pengejeen.github.io/blog/category/AI/LLM/6.RAG_%EA%B2%80%EC%83%89_%EC%A6%9D%EA%B0%95_%EC%83%9D%EC%84%B1</guid>
+      <pubDate>Fri, 24 Apr 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description># 검색 증강 생성 RAG (Retrieval-Augmented Generation) 참고 - [(1부) RAG란 무엇인가 - ncloud forums](https://www.ncloud-forums.com/topic/277/) ## 1. 개요 Fine tuning은 시간과 비용이 많이 소요되고 모델의 범용성이 저하될 수 있음. RAG는 **외부 지식 소스와 연계**하여 모델의 범용성과 적응력을 유지. ### 작동방식 1. 사용자가 질문 입력 2. RAG는 외부 데이터베이스에서 질문과 관</description>
+    </item>
+    <item>
+      <title>LangGraph</title>
+      <link>https://pengejeen.github.io/blog/category/AI/LangGraph/1.LangGraph</link>
+      <guid isPermaLink="true">https://pengejeen.github.io/blog/category/AI/LangGraph/1.LangGraph</guid>
+      <pubDate>Fri, 24 Apr 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description># LangGraph 상태(state) 기반 노드 그래프로 체인보다 복잡한 LLM 워크플로우를 안정적으로 구성하는 라이브러리. ## 왜 Chain이 아닌 Graph? - Chain은 선형 흐름(A → B → C)에 강함. 분기/조건/순환이 들어오면 코드가 복잡해진다. - Graph는 **노드 + 엣지 + 공유 상태(state)** 모델로 분기·조건 라우팅·병렬 실행을 1급 객체로 다룬다. ## 자주 쓰는 패턴 1. **순차 체인** — 단순 변환 파이프라인 2. **조건 분기 (Route</description>
+    </item>
+    <item>
+      <title>map-reduce 브랜치를 병렬 실행하는 방법</title>
+      <link>https://pengejeen.github.io/blog/category/AI/LangGraph/2.map-reduce_%EB%B8%8C%EB%9E%9C%EC%B9%98_%EB%B3%91%EB%A0%AC_%EC%8B%A4%ED%96%89</link>
+      <guid isPermaLink="true">https://pengejeen.github.io/blog/category/AI/LangGraph/2.map-reduce_%EB%B8%8C%EB%9E%9C%EC%B9%98_%EB%B3%91%EB%A0%AC_%EC%8B%A4%ED%96%89</guid>
+      <pubDate>Fri, 24 Apr 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description># LangGraph: map-reduce 브랜치 병렬 실행 공식 문서 - [Graph API: map-reduce and the Send API](https://langchain-ai.github.io/langgraph/how-tos/graph-api/#map-reduce-and-the-send-api) ## 왜 필요한가 작업 분할과 병렬 처리를 위해 필수. 1. **작업을 더 작은 하위 작업으로 분해** — 큰 입력을 chunk 단위로 쪼갬 2. **각 하위 작업을 병렬로 처리** — </description>
+    </item>
+    <item>
+      <title>TTS finetuning(XTTS2)</title>
+      <link>https://pengejeen.github.io/blog/category/AI/TTS/1.TTS_finetuning_XTTS2</link>
+      <guid isPermaLink="true">https://pengejeen.github.io/blog/category/AI/TTS/1.TTS_finetuning_XTTS2</guid>
+      <pubDate>Fri, 24 Apr 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description># TTS finetuning(XTTS2) XTTS2 기반 TTS 파인튜닝 학습/실험 시작 메모. 상세 절차는 다음 문서(`2.TTS_finetuning.md`) 참조. ## 학습 계기 - ChatGPT-4o의 음성 응답 흐름을 보고 음성 합성에 관심 - TTS 모델 직접 파인튜닝 흐름 학습이 목적 - 추가로 OpenAI Swiper 등 음성 어시스턴트 흐름 비교 검토 ## XTTS2 선택 이유 - 다국어 지원 - 멀티 데이터셋 (multi-dataset) 학습 가능 - Coqui TTS</description>
+    </item>
+    <item>
+      <title>TTS finetuning</title>
+      <link>https://pengejeen.github.io/blog/category/AI/TTS/2.TTS_finetuning</link>
+      <guid isPermaLink="true">https://pengejeen.github.io/blog/category/AI/TTS/2.TTS_finetuning</guid>
+      <pubDate>Fri, 24 Apr 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description># TTS finetuning 사용 모델: `tts_models--multilingual--multi-dataset--xtts_v2` ## 1. Preprocessing audio directory = `wavs` (임시) ### 1.1 datasets dataset 디렉토리 구조: ``` metadata.txt /wavs |- audio1.wav |- audio2.wav ``` `metadata.txt` 형식: ``` {audiofile_name1}|{text} {audiofi</description>
+    </item>
+    <item>
+      <title>AI 학습 인덱스</title>
+      <link>https://pengejeen.github.io/blog/category/AI/%EA%B0%9C%EC%9A%94/1.AI</link>
+      <guid isPermaLink="true">https://pengejeen.github.io/blog/category/AI/%EA%B0%9C%EC%9A%94/1.AI</guid>
+      <pubDate>Fri, 24 Apr 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description># AI AI/LLM 관련 학습·실험·구현 정리. 이 카테고리는 다음과 같은 하위 폴더로 구성: ## 폴더 구성 - **개요/** — 본 인덱스 + 응용(FastAPI 서빙) + Optimizer / Gemma 개요 - **LangGraph/** — LangGraph 그래프 워크플로우 + map-reduce 병렬 패턴 - **LLM/** — LLM 환경/파인튜닝, RNN 기초부터 Llama3·RAG까지 - **TTS/** — XTTS2 기반 음성 합성 파인튜닝 - **논문정리/** — 직접 </description>
+    </item>
+    <item>
+      <title>딥러닝 응용 FastAPI</title>
+      <link>https://pengejeen.github.io/blog/category/AI/%EA%B0%9C%EC%9A%94/2.%EB%94%A5%EB%9F%AC%EB%8B%9D_%EC%9D%91%EC%9A%A9_fastapi</link>
+      <guid isPermaLink="true">https://pengejeen.github.io/blog/category/AI/%EA%B0%9C%EC%9A%94/2.%EB%94%A5%EB%9F%AC%EB%8B%9D_%EC%9D%91%EC%9A%A9_fastapi</guid>
+      <pubDate>Fri, 24 Apr 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description># 딥러닝 응용 FastAPI 딥러닝 모델을 FastAPI로 서빙하기 위한 메모. 참고 - [tech.osci.kr — FastAPI 파이썬으로 간단하게 웹 API 만들기](https://tech.osci.kr/fastapi-%ED%8C%8C%EC%9D%B4%EC%8D%AC%EC%9C%BC%EB%A1%9C-%EA%B0%84%EB%8B%A8%ED%95%98%EA%B2%8C-%EC%9B%B9-api-%EB%A7%8C%EB%93%A4%EA%B8%B0/) ## 1. 모델 로딩과 앱 수명주기 분리 </description>
+    </item>
+    <item>
+      <title>Optimizer</title>
+      <link>https://pengejeen.github.io/blog/category/AI/%EA%B0%9C%EC%9A%94/3.Optimizer</link>
+      <guid isPermaLink="true">https://pengejeen.github.io/blog/category/AI/%EA%B0%9C%EC%9A%94/3.Optimizer</guid>
+      <pubDate>Fri, 24 Apr 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description># Optimizer 활성화 함수와 옵티마이저 정리. ## 1. 활성화 함수 변천 ### sigmoid → ReLU sigmoid에서 기울기가 0에 수렴하는 부분은 학습 시간이 오래 걸린다 (기울기 ≈ 0이면 변화가 매우 느림). 반면 **ReLU**는 양수 영역에서 기울기가 1이라 학습이 빠름. → gradient descent 속도 향상. &gt; idea → code → experiment ### 죽은 ReLU 문제 일부 뉴런이 0 이외의 값을 출력하지 않는 문제. 해결 위해 변형들 </description>
+    </item>
+    <item>
+      <title>Gemma 개요</title>
+      <link>https://pengejeen.github.io/blog/category/AI/%EA%B0%9C%EC%9A%94/4.Gemma_%EA%B0%9C%EC%9A%94</link>
+      <guid isPermaLink="true">https://pengejeen.github.io/blog/category/AI/%EA%B0%9C%EC%9A%94/4.Gemma_%EA%B0%9C%EC%9A%94</guid>
+      <pubDate>Fri, 24 Apr 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description># Gemma 2: Improving Open Language Models at a Practical Size - 논문 - [arxiv 2408.00118](https://arxiv.org/pdf/2408.00118) - 모델 - [google/gemma-2-2b-it](https://huggingface.co/google/gemma-2-2b-it) - Keras에서 fine-tuning - [Google Developers Blog](https://developers.googleblog.com</description>
+    </item>
+    <item>
+      <title>논문리뷰 목록</title>
+      <link>https://pengejeen.github.io/blog/category/AI/%EB%85%BC%EB%AC%B8%EC%A0%95%EB%A6%AC/1.%EB%85%BC%EB%AC%B8%EB%A6%AC%EB%B7%B0_%EB%AA%A9%EB%A1%9D</link>
+      <guid isPermaLink="true">https://pengejeen.github.io/blog/category/AI/%EB%85%BC%EB%AC%B8%EC%A0%95%EB%A6%AC/1.%EB%85%BC%EB%AC%B8%EB%A6%AC%EB%B7%B0_%EB%AA%A9%EB%A1%9D</guid>
+      <pubDate>Fri, 24 Apr 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description># 논문리뷰 목록 읽고 정리한 LLM·생성 모델 관련 논문 모음. ## 목록 1. **Latent Diffusion for Language Generation** (NeurIPS 2023) - 텍스트 생성에 latent diffusion 적용. 픽셀 공간이 아닌 잠재 공간에서 디퓨전 → 효율 향상. - 직접 모델링하지 않고 사전학습된 BART의 latent space 활용. 2. **Gemma 2: Improving Open Language Models at a Practical</description>
+    </item>
+    <item>
+      <title>Latent Diffusion for Language Generation</title>
+      <link>https://pengejeen.github.io/blog/category/AI/%EB%85%BC%EB%AC%B8%EC%A0%95%EB%A6%AC/2.Latent_Diffusion_for_Language_Generation</link>
+      <guid isPermaLink="true">https://pengejeen.github.io/blog/category/AI/%EB%85%BC%EB%AC%B8%EC%A0%95%EB%A6%AC/2.Latent_Diffusion_for_Language_Generation</guid>
+      <pubDate>Fri, 24 Apr 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description># Latent Diffusion for Language Generation 리뷰 참고 - [kimjy99 블로그](https://kimjy99.github.io/%EB%85%BC%EB%AC%B8%EB%A6%AC%EB%B7%B0/ldlg/) NeurIPS 2023. [[Paper](https://arxiv.org/abs/2212.09462)] Justin Lovelace, Varsha Kishore, Chao Wan, Eliot Shekhtman, Kilian Weinberger **Corne</description>
+    </item>
+    <item>
+      <title>Gemma 2: Improving Open Language Models at a Practical Size</title>
+      <link>https://pengejeen.github.io/blog/category/AI/%EB%85%BC%EB%AC%B8%EC%A0%95%EB%A6%AC/3.Gemma_2</link>
+      <guid isPermaLink="true">https://pengejeen.github.io/blog/category/AI/%EB%85%BC%EB%AC%B8%EC%A0%95%EB%A6%AC/3.Gemma_2</guid>
+      <pubDate>Fri, 24 Apr 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description># Gemma 2: Improving Open Language Models at a Practical Size &gt; 본 논문 리뷰는 [개요/4.Gemma_개요](../../개요/4.Gemma_개요)와 동일한 내용을 다룹니다. 상세 내용은 해당 글 참조. ## 한 줄 요약 Knowledge Distillation + 아키텍처 개선(Logit soft-capping, Post-norm + RMSNorm, Grouped-Query Attention)으로 작은 모델에서 큰 모델 수준의 성능을 달성한 </description>
+    </item>
+    <item>
+      <title>Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks</title>
+      <link>https://pengejeen.github.io/blog/category/AI/%EB%85%BC%EB%AC%B8%EC%A0%95%EB%A6%AC/4.RAG_paper</link>
+      <guid isPermaLink="true">https://pengejeen.github.io/blog/category/AI/%EB%85%BC%EB%AC%B8%EC%A0%95%EB%A6%AC/4.RAG_paper</guid>
+      <pubDate>Fri, 24 Apr 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description># Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks Lewis, P., Perez, E., Piktus, A., Petroni, F., Karpukhin, V., Goyal, N., ... &amp; Kiela, D. (2020). *Advances in Neural Information Processing Systems*, *33*, 9459-9474. [paper](https://arxiv.org/abs/2005.11401) ##</description>
+    </item>
+    <item>
+      <title>django(python3.10) - playground 개요</title>
+      <link>https://pengejeen.github.io/blog/category/BE/Django/0.%EA%B0%9C%EC%9A%94</link>
+      <guid isPermaLink="true">https://pengejeen.github.io/blog/category/BE/Django/0.%EA%B0%9C%EC%9A%94</guid>
+      <pubDate>Fri, 24 Apr 2026 00:00:00 GMT</pubDate>
+      <category>BE</category>
+      <description># 0. 자료 - 튜토리얼 - [https://zerosin13.tistory.com/5](https://zerosin13.tistory.com/5) - 운영 링크 - [http://nycply.duckdns.org/](http://nycply.duckdns.org/) - admin 계정 오류 해결 - [velog 글](https://velog.io/@vdoring/Django-admin-%EA%B3%84%EC%A0%95-%EC%83%9D%EC%84%B1%EC%98%A4%EB%A5%98-%ED%</description>
+    </item>
+    <item>
+      <title>1장 Django MVC/MVT 구조</title>
+      <link>https://pengejeen.github.io/blog/category/BE/Django/1.Django_MVC_MVT_%EA%B5%AC%EC%A1%B0</link>
+      <guid isPermaLink="true">https://pengejeen.github.io/blog/category/BE/Django/1.Django_MVC_MVT_%EA%B5%AC%EC%A1%B0</guid>
+      <pubDate>Fri, 24 Apr 2026 00:00:00 GMT</pubDate>
+      <category>BE</category>
+      <description># 1. MVC vs MVT Spring은 MVC 구조, Django는 MVT 구조를 가진다. ## 1.1 MVC 구조 ![MVC 구조](./assets/1-1.png) - **View**: 화면에 보여주는 부분 - **Control**: 프레임워크 명령구조 - **Model**: 관리하는 데이터 또는 control 및 view에 대한 통보를 담당 ## 1.2 MVT 구조 ![MVT 구조](./assets/1-2.png) - **View**: MVC의 Control과 비슷한 역할 (명</description>
+    </item>
+  </channel>
+</rss>
