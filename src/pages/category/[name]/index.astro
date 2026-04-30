@@ -1,0 +1,170 @@
+---
+import { ArrowLeft, BookOpen, ChevronDown, Calendar } from 'lucide-react';
+import Layout from '../../../layouts/Layout.astro';
+import {
+  getPostsIndex,
+  humanize,
+  sortByNumericPrefix,
+  buildPostHref,
+  type PostMeta,
+} from '../../../utils/posts';
+
+export async function getStaticPaths() {
+  const { categories } = await getPostsIndex();
+  const slugs = new Set<string>(categories.map((c) => c.slug));
+  // Virtual MLAI category combining ML + AI.
+  if (slugs.has('ML') || slugs.has('AI')) slugs.add('MLAI');
+  return Array.from(slugs).map((slug) => ({ params: { name: slug } }));
+}
+
+const ACCENTS = [
+  '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6',
+  '#ef4444', '#0ea5e9', '#f97316', '#6366f1',
+];
+
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '') || '';
+const { name } = Astro.params;
+const decodedName = decodeURIComponent(name as string);
+const isVirtualMLAI = decodedName === 'MLAI';
+const displayName = isVirtualMLAI ? 'ML / AI' : humanize(decodedName);
+
+const { categories, posts } = await getPostsIndex();
+const targetCats = isVirtualMLAI ? ['ML', 'AI'] : [decodedName];
+
+interface Folder {
+  key: string;
+  cat: string;
+  slug: string;
+  title: string;
+  posts: PostMeta[];
+}
+
+const folderMap = new Map<string, Folder>();
+for (const targetCat of targetCats) {
+  const cat = categories.find((c) => c.slug === targetCat);
+  if (cat) {
+    for (const s of cat.subs) {
+      const key = `${targetCat}/${s.slug}`;
+      if (!folderMap.has(key)) {
+        folderMap.set(key, {
+          key,
+          cat: targetCat,
+          slug: s.slug,
+          title: humanize(s.slug),
+          posts: [],
+        });
+      }
+    }
+  }
+}
+for (const p of posts) {
+  if (!targetCats.includes(p.cat)) continue;
+  const key = `${p.cat}/${p.sub}`;
+  if (!folderMap.has(key)) {
+    folderMap.set(key, { key, cat: p.cat, slug: p.sub, title: humanize(p.sub), posts: [] });
+  }
+  folderMap.get(key)!.posts.push(p);
+}
+
+const folderCards = Array.from(folderMap.values())
+  .filter((entry) => entry.posts.length > 0)
+  .map((entry) => ({
+    ...entry,
+    posts: entry.posts.slice().sort((a, b) => sortByNumericPrefix(a.fileName, b.fileName)),
+  }))
+  .sort((a, b) => a.title.localeCompare(b.title, 'ko'));
+---
+
+<Layout title={displayName} description={`${displayName} 카테고리의 포스트 모음`}>
+  <div class="category-page">
+    <div class="page-header">
+      <a href={`${baseUrl}/`} class="back-btn">
+        <ArrowLeft size={16} /> 홈으로
+      </a>
+      <h1 class="page-title">{displayName}</h1>
+      <p class="page-subtitle">총 {folderCards.length}개의 주제</p>
+    </div>
+
+    {
+      folderCards.length > 0 ? (
+        <div class="accordion">
+          {folderCards.map((folder, fi) => {
+            const accent = ACCENTS[fi % ACCENTS.length];
+            return (
+              <div
+                class="accordion-item"
+                data-accordion-key={folder.key}
+                style={`--accent-color: ${accent}; animation-delay: ${fi * 0.05}s`}
+              >
+                <button
+                  type="button"
+                  class="accordion-trigger"
+                  data-accordion-toggle
+                  aria-expanded="false"
+                >
+                  <div class="accordion-trigger-left">
+                    <h2 class="accordion-section-name">
+                      {isVirtualMLAI && <span class="accordion-section-tag">{folder.cat}</span>}
+                      {folder.title}
+                    </h2>
+                    <span class="accordion-badge">{folder.posts.length}</span>
+                  </div>
+                  <ChevronDown size={17} className="accordion-chevron" />
+                </button>
+
+                <div class="accordion-content">
+                  <div class="accordion-post-list">
+                    {folder.posts.map((post) => (
+                      <a
+                        href={`${baseUrl}${buildPostHref(post)}`}
+                        class="accordion-post-item"
+                      >
+                        <div class="accordion-post-left">
+                          <span class="accordion-post-title">{post.title}</span>
+                        </div>
+                        <span class="accordion-post-date">
+                          <Calendar size={12} />
+                          {post.dateLabel}
+                        </span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div class="empty-state">
+          <BookOpen size={40} color="#6366f1" style={{ marginBottom: '1rem', opacity: 0.4 }} />
+          <h2>아직 게시글이 없습니다</h2>
+          <p>이 카테고리는 비어 있어요.</p>
+        </div>
+      )
+    }
+  </div>
+</Layout>
+
+<script is:inline>
+  // Accordion behavior — single-open, toggles `.open` on the parent item.
+  (function () {
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-accordion-toggle]');
+      if (!btn) return;
+      var item = btn.closest('.accordion-item');
+      if (!item) return;
+      var wasOpen = item.classList.contains('open');
+      // Close all siblings.
+      var siblings = item.parentElement?.querySelectorAll('.accordion-item') || [];
+      siblings.forEach(function (s) {
+        s.classList.remove('open');
+        var t = s.querySelector('[data-accordion-toggle]');
+        if (t) t.setAttribute('aria-expanded', 'false');
+      });
+      if (!wasOpen) {
+        item.classList.add('open');
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    });
+  })();
+</script>

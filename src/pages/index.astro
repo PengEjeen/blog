@@ -1,0 +1,82 @@
+---
+import {
+  Server,
+  MonitorPlay,
+  Activity,
+  Cpu,
+  Database,
+  CloudRain,
+  Brain,
+  Folder,
+  ExternalLink,
+} from 'lucide-react';
+import Layout from '../layouts/Layout.astro';
+import FidsBoard from '../components/FidsBoard.tsx';
+
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '') || '';
+
+const CATEGORIES = [
+  { slug: 'CS', label: 'CS', desc: '알고리즘 · 네트워크 · 자료구조', Icon: Cpu, size: 'big' },
+  { slug: 'BE', label: 'Backend', desc: 'API 설계와 서버 개발', Icon: Server, size: 'normal' },
+  { slug: 'FE', label: 'Frontend', desc: '웹 UI 개발', Icon: MonitorPlay, size: 'normal' },
+  { slug: 'MLAI', label: 'ML / AI', desc: '머신러닝 · 딥러닝 · AI 모델', Icon: Brain, size: 'big' },
+  { slug: 'Database', label: 'Database', desc: 'SQL · NoSQL · 데이터 설계', Icon: Database, size: 'normal' },
+  { slug: 'DevOps', label: 'DevOps', desc: 'CI/CD · 인프라 · 배포 자동화', Icon: Activity, size: 'normal' },
+  { slug: 'Cloud', label: 'Cloud', desc: 'AWS · GCP · 클라우드 아키텍처', Icon: CloudRain, size: 'normal' },
+  { slug: '기타', label: '기타', desc: '프로젝트 메모 · 분류 보류', Icon: Folder, size: 'normal' },
+];
+---
+
+<Layout
+  description="개발 공부 중 배운 것들을 정리하고 경험을 아카이빙하는 개인 블로그입니다. CS, 백엔드, 프론트엔드, ML/AI, DevOps 등."
+>
+  <div class="home-container">
+    <div class="bento-hero">
+      <div class="bento-hero-text">
+        <p class="bento-hero-eyebrow">조남영 · PengEJeen</p>
+        <h1 class="bento-hero-title">놀땐놀고,<br />공부할땐 공부하자.</h1>
+      </div>
+      <div class="bento-hero-meta">
+        <p class="bento-hero-desc">
+          개발 공부 중 배운 것들을 정리하고<br />
+          경험을 아카이빙하는 개인 블로그입니다.
+        </p>
+        <a
+          class="bento-hero-link"
+          href="https://friendly-seaplane-a4d.notion.site/Tech-1ae31c6367a38076b55af14913b99826"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <span class="bento-hero-link-tag">Notion 이전 중</span>
+          <span class="bento-hero-link-label">기존 Tech 노트 보기</span>
+          <ExternalLink size={13} />
+        </a>
+      </div>
+    </div>
+
+    <div class="bento-grid">
+      {
+        CATEGORIES.map((cat) => {
+          const Icon = cat.Icon;
+          return (
+            <a
+              href={`${baseUrl}/category/${encodeURIComponent(cat.slug)}`}
+              class={`bento-card${cat.size === 'big' ? ' bento-card--big' : ''}`}
+            >
+              <div class="bento-card-top">
+                <span class="bento-card-icon"><Icon size={20} strokeWidth={1.5} /></span>
+                <span class="bento-card-label">{cat.label}</span>
+              </div>
+              <p class="bento-card-desc">{cat.desc}</p>
+              <span class="bento-card-arrow">→</span>
+            </a>
+          );
+        })
+      }
+    </div>
+
+    <div class="travel-section">
+      <FidsBoard travelHref={`${baseUrl}/category/Travel`} client:visible />
+    </div>
+  </div>
+</Layout>

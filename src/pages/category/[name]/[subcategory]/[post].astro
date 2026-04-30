@@ -1,0 +1,146 @@
+---
+import { ArrowLeft, Calendar, FolderOpen } from 'lucide-react';
+import Layout from '../../../../layouts/Layout.astro';
+import ReadingProgress from '../../../../components/ReadingProgress.tsx';
+import PostToc from '../../../../components/PostToc.tsx';
+import ViewCount from '../../../../components/ViewCount.tsx';
+import {
+  getPostsIndex,
+  humanize,
+  buildPostHref,
+} from '../../../../utils/posts';
+
+export async function getStaticPaths() {
+  const { posts } = await getPostsIndex();
+  return posts.map((p) => ({
+    params: { name: p.cat, subcategory: p.sub, post: p.slug },
+    props: { entryId: p.entry.id },
+  }));
+}
+
+const { entryId } = Astro.props;
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '') || '';
+const { name, subcategory, post } = Astro.params;
+const decodedName = decodeURIComponent(name as string);
+const decodedSubcategory = decodeURIComponent(subcategory as string);
+const decodedPost = decodeURIComponent(post as string);
+
+const { posts } = await getPostsIndex();
+const meta = posts.find((p) => p.entry.id === entryId);
+if (!meta) {
+  throw new Error(`Post not found: ${entryId}`);
+}
+
+const { Content, headings } = await meta.entry.render();
+const hasContent = (meta.entry.body || '').trim().length > 0;
+const description = (meta.excerpt || '').replace(/\s+/g, ' ').slice(0, 160);
+const trackPath = `/category/${encodeURIComponent(meta.cat)}/${encodeURIComponent(meta.sub)}/${encodeURIComponent(meta.slug)}`;
+---
+
+<Layout title={meta.title} description={description}>
+  <div class="post-shell">
+    <article class="post-page">
+      <ReadingProgress targetSelector=".post-page" client:visible />
+
+      <div class="page-header post-header">
+        <a
+          href={`${baseUrl}/category/${encodeURIComponent(decodedName)}/${encodeURIComponent(decodedSubcategory)}`}
+          class="back-btn"
+        >
+          <ArrowLeft size={16} /> {humanize(decodedSubcategory)}
+        </a>
+
+        <div class="post-path">
+          <span class="post-path-chip">
+            <FolderOpen size={13} />
+            {humanize(decodedName)}
+          </span>
+          <span class="post-path-separator">/</span>
+          <span class="post-path-chip muted">{humanize(decodedSubcategory)}</span>
+        </div>
+
+        <h1 class="post-title">{meta.title}</h1>
+
+        <div class="post-meta">
+          <span class="post-meta-item">
+            <Calendar size={14} />
+            {meta.dateLabel}
+          </span>
+          <ViewCount path={trackPath} client:idle />
+        </div>
+      </div>
+
+      {
+        hasContent ? (
+          <div class="post-content markdown-body">
+            <Content />
+          </div>
+        ) : (
+          <div class="empty-state">
+            <h2>본문이 아직 없습니다</h2>
+            <p>이 포스트 파일은 생성되었지만 내용이 비어 있습니다.</p>
+          </div>
+        )
+      }
+    </article>
+
+    <aside class="post-toc-rail" aria-label="목차 영역">
+      <PostToc targetSelector=".post-content" client:visible />
+    </aside>
+  </div>
+</Layout>
+
+<script is:inline>
+  // Wrap each `<pre>` in `.markdown-body` with a `.codeblock` toolbar (Copy button + lang label).
+  (function () {
+    var root = document.querySelector('.markdown-body');
+    if (!root) return;
+    var pres = root.querySelectorAll('pre');
+    pres.forEach(function (pre) {
+      if (pre.parentElement && pre.parentElement.classList.contains('codeblock')) return;
+      var code = pre.querySelector('code');
+      var lang = '';
+      if (code) {
+        var match = (code.className || '').match(/language-([\w-]+)/);
+        if (match) lang = match[1];
+      }
+      var wrapper = document.createElement('div');
+      wrapper.className = 'codeblock';
+      var toolbar = document.createElement('div');
+      toolbar.className = 'codeblock-toolbar';
+      if (lang) {
+        var langSpan = document.createElement('span');
+        langSpan.className = 'codeblock-lang';
+        langSpan.textContent = lang;
+        toolbar.appendChild(langSpan);
+      }
+      var copyBtn = document.createElement('button');
+      copyBtn.type = 'button';
+      copyBtn.className = 'codeblock-copy';
+      copyBtn.setAttribute('aria-label', '코드 복사');
+      copyBtn.textContent = 'Copy';
+      copyBtn.addEventListener('click', function () {
+        var text = (code && code.textContent) || pre.textContent || '';
+        navigator.clipboard.writeText(text).then(
+          function () {
+            copyBtn.textContent = 'Copied';
+            copyBtn.classList.add('codeblock-copy--ok');
+            setTimeout(function () {
+              copyBtn.textContent = 'Copy';
+              copyBtn.classList.remove('codeblock-copy--ok');
+            }, 1400);
+          },
+          function () {
+            copyBtn.textContent = 'Failed';
+            setTimeout(function () { copyBtn.textContent = 'Copy'; }, 1400);
+          },
+        );
+      });
+      toolbar.appendChild(copyBtn);
+
+      pre.parentNode.insertBefore(wrapper, pre);
+      wrapper.appendChild(toolbar);
+      wrapper.appendChild(pre);
+    });
+  })();
+</script>

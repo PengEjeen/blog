@@ -1,0 +1,73 @@
+---
+import { ArrowLeft, FileText, Calendar } from 'lucide-react';
+import Layout from '../../../../layouts/Layout.astro';
+import {
+  getPostsIndex,
+  humanize,
+  sortByNumericPrefix,
+  buildPostHref,
+} from '../../../../utils/posts';
+
+export async function getStaticPaths() {
+  const { categories } = await getPostsIndex();
+  const paths: { params: { name: string; subcategory: string } }[] = [];
+  for (const cat of categories) {
+    for (const sub of cat.subs) {
+      paths.push({ params: { name: cat.slug, subcategory: sub.slug } });
+    }
+  }
+  return paths;
+}
+
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '') || '';
+const { name, subcategory } = Astro.params;
+const decodedName = decodeURIComponent(name as string);
+const decodedSubcategory = decodeURIComponent(subcategory as string);
+
+const { posts: all } = await getPostsIndex();
+const posts = all
+  .filter((p) => p.cat === decodedName && p.sub === decodedSubcategory)
+  .slice()
+  .sort((a, b) => sortByNumericPrefix(a.fileName, b.fileName));
+
+const pageTitle = `${humanize(decodedSubcategory)} — ${humanize(decodedName)}`;
+---
+
+<Layout title={pageTitle} description={`${humanize(decodedSubcategory)} 카테고리의 포스트 ${posts.length}편`}>
+  <div class="category-page">
+    <div class="page-header">
+      <a href={`${baseUrl}/category/${encodeURIComponent(decodedName)}`} class="back-btn">
+        <ArrowLeft size={16} /> {humanize(decodedName)}
+      </a>
+      <h1 class="page-title">{humanize(decodedSubcategory)}</h1>
+      <p class="page-subtitle">{posts.length}개의 포스트</p>
+    </div>
+
+    <div class="post-list-grid">
+      {
+        posts.length > 0 ? (
+          posts.map((post, index) => (
+            <a
+              href={`${baseUrl}${buildPostHref(post)}`}
+              class="post-list-card"
+              style={`animation-delay: ${index * 0.08}s`}
+            >
+              <div class="post-list-main">
+                <FileText size={16} style={{ color: 'var(--primary)', flexShrink: 0 }} />
+                <h3 class="post-list-title">{post.title}</h3>
+              </div>
+              <div class="post-list-date">
+                <Calendar size={13} />
+                <span>{post.dateLabel}</span>
+              </div>
+            </a>
+          ))
+        ) : (
+          <div class="empty-state">
+            <p>게시글이 없습니다.</p>
+          </div>
+        )
+      }
+    </div>
+  </div>
+</Layout>

@@ -1,30 +1,31 @@
 {
-  "name": "blog",
-  "private": true,
-  "version": "0.0.0",
+  "name": "blog-astro",
   "type": "module",
+  "version": "0.0.1",
+  "private": true,
   "scripts": {
-    "dev": "vite",
-    "prebuild": "node scripts/generate-feeds.js",
-    "build": "vite build && cp dist/index.html dist/404.html",
-    "feeds": "node scripts/generate-feeds.js",
-    "lint": "eslint . --report-unused-disable-directives",
-    "preview": "vite preview"
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@astrojs/mdx": "^3.1.9",
+    "@astrojs/react": "^3.6.3",
+    "@astrojs/rss": "^4.0.10",
+    "@astrojs/sitemap": "^3.1.6",
+    "astro": "^4.16.18",
     "lucide-react": "^0.300.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.21.1"
+    "rehype-autolink-headings": "^7.1.0",
+    "rehype-slug": "^6.0.0",
+    "typescript": "^5.7.2"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",
-    "@types/react-dom": "^18.2.17",
-    "@vitejs/plugin-react": "^4.2.1",
-    "eslint": "^8.55.0",
-    "eslint-plugin-react": "^7.33.2",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.5",
-    "vite": "^5.0.8"
+    "@types/react-dom": "^18.2.17"
   }
 }

@@ -1,0 +1,155 @@
+---
+import '../styles/style.css';
+import Header from '../components/Header.astro';
+import Sidebar from '../components/Sidebar.astro';
+import Footer from '../components/Footer.astro';
+
+export interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+  noIndex?: boolean;
+}
+
+const {
+  title,
+  description = '개발 공부 중 배운 것들을 정리하고 경험을 아카이빙하는 개인 블로그입니다.',
+  ogImage,
+  noIndex = false,
+} = Astro.props;
+
+const SITE_NAME = "PenGejeen's Blog";
+const fullTitle = title ? `${title} · ${SITE_NAME}` : SITE_NAME;
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).toString() : undefined;
+---
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}/favicon.svg`} />
+    <link rel="canonical" href={canonical} />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    {noIndex && <meta name="robots" content="noindex" />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+
+    <link rel="alternate" type="application/rss+xml" title={SITE_NAME} href={`${import.meta.env.BASE_URL}/rss.xml`} />
+    <link rel="sitemap" href={`${import.meta.env.BASE_URL}/sitemap-index.xml`} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <script is:inline>
+      // Theme bootstrap — runs before paint to prevent FOUC.
+      (function () {
+        try {
+          var stored = localStorage.getItem('blog-theme');
+          var valid = stored === 'light' || stored === 'dark' || stored === 'auto';
+          var theme = valid ? stored : 'auto';
+          var resolved =
+            theme === 'auto'
+              ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+              : theme;
+          document.documentElement.dataset.theme = resolved;
+          document.documentElement.dataset.themePref = theme;
+        } catch (e) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePref = 'auto';
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="app-container">
+      <Header />
+      <div class="layout">
+        <Sidebar />
+        <main class="main-content">
+          <slot />
+        </main>
+      </div>
+      <Footer />
+    </div>
+
+    <script is:inline>
+      // Sidebar open/close — body class toggle. Header hamburger and backdrop dispatch events.
+      (function () {
+        var body = document.body;
+        function open() { body.classList.add('sidebar-open'); }
+        function close() { body.classList.remove('sidebar-open'); }
+        function toggle() { body.classList.toggle('sidebar-open'); }
+        document.addEventListener('click', function (e) {
+          var t = e.target.closest('[data-sidebar-toggle]');
+          if (t) { e.preventDefault(); toggle(); return; }
+          var c = e.target.closest('[data-sidebar-close]');
+          if (c) { e.preventDefault(); close(); return; }
+        });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') close();
+        });
+        // Close sidebar on navigation (link inside sidebar).
+        document.addEventListener('click', function (e) {
+          var link = e.target.closest('.sidebar a[href]');
+          if (link) close();
+        });
+      })();
+    </script>
+
+    <script is:inline>
+      // Theme toggle — cycles auto → light → dark → auto.
+      (function () {
+        function apply(pref) {
+          var resolved = pref === 'auto'
+            ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+            : pref;
+          document.documentElement.dataset.theme = resolved;
+          document.documentElement.dataset.themePref = pref;
+          try { localStorage.setItem('blog-theme', pref); } catch (e) {}
+          var btn = document.querySelector('[data-theme-toggle]');
+          if (btn) {
+            btn.dataset.themeIcon = pref;
+            var label = pref === 'dark' ? '다크' : pref === 'light' ? '라이트' : '시스템';
+            btn.setAttribute('aria-label', '테마: ' + label + ' (클릭해서 전환)');
+            btn.setAttribute('title', '테마: ' + label);
+          }
+        }
+        // Sync icon on first paint.
+        var initial = document.documentElement.dataset.themePref || 'auto';
+        document.addEventListener('DOMContentLoaded', function () { apply(initial); });
+
+        document.addEventListener('click', function (e) {
+          var btn = e.target.closest('[data-theme-toggle]');
+          if (!btn) return;
+          e.preventDefault();
+          var current = document.documentElement.dataset.themePref || 'auto';
+          var next = current === 'auto' ? 'light' : current === 'light' ? 'dark' : 'auto';
+          apply(next);
+        });
+
+        // React to system change when in auto mode.
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener('change', function () {
+          var pref = document.documentElement.dataset.themePref || 'auto';
+          if (pref === 'auto') apply('auto');
+        });
+      })();
+    </script>
+  </body>
+</html>

@@ -1,37 +1,33 @@
 {
-  "goal": "GoatCounter 통합 — 페이지뷰 표시 (글마다, 압축 X, 모든 로드)",
-  "iteration": 5,
+  "goal": "Astro 마이그레이션 — React SPA(Vite) → Astro SSG. 디자인/URL/콘텐츠 100% 보존, SEO 정상화 (정적 HTML 생성, 글마다 메타태그, lang=ko, sitemap/rss).",
+  "iteration": 0,
   "max_iterations": 5,
-  "status": "passed",
+  "status": "running",
+  "constraints": [
+    "현재 vite base '/blog/' 유지 (GitHub Pages)",
+    "URL 구조 유지: /category/:cat/:sub/:post",
+    "src/style.css (1316줄) 그대로 import",
+    "117개 마크다운(content/posts/**) 그대로 사용, frontmatter 없는 글도 처리",
+    "인터랙티브 컴포넌트 5개는 React Island로 유지: SidebarSearch/ReadingProgress/PostToc/ViewCount/EmailMenu",
+    "정적 컴포넌트 3개는 .astro로 변환: Header/Footer/Sidebar",
+    "코드 하이라이팅: 자체 파서 → Shiki(Astro 빌트인)로 교체",
+    "RSS/Sitemap: scripts/generate-feeds.js → @astrojs/sitemap + @astrojs/rss",
+    "ThemeProvider/SidebarProvider는 inline script로 FOUC 없이 처리",
+    "기존 코드 영향 차단: astro-blog/ 서브폴더에서 작업 후 cutover"
+  ],
   "plan": [
-    "src/utils/analytics.js: GoatCounter script 동적 로드 + count + counter API",
-    "src/components/ViewCount.jsx: 조회수 배지 (Eye 아이콘 + 1,234회 ko-KR)",
-    "src/pages/Post.jsx: 메타 줄에 ViewCount 통합",
-    "style: .view-count pill",
-    ".env.example + .gitignore: VITE_GOATCOUNTER_CODE 가이드",
-    "build/lint 통과"
+    "Phase 1: astro-blog/ 셋업 — Astro + @astrojs/react/sitemap/rss/mdx, astro.config(site+base=/blog/), style.css 복사",
+    "Phase 2: 콘텐츠 이전 — content/posts/ → astro-blog/src/content/posts/, Content Collection 스키마(src/content/config.ts), 이미지 자산 처리",
+    "Phase 3: 레이아웃/정적 컴포넌트 — Layout.astro + Header/Footer/Sidebar.astro 변환, theme inline script",
+    "Phase 4: 페이지 라우팅 — index/category/[name]/[sub]/[post].astro + 404.astro",
+    "Phase 5: 마크다운 렌더링 — Shiki + rehype-autolink-headings + 코드 복사 inline script",
+    "Phase 6: React Islands — SidebarSearch/ReadingProgress/PostToc/ViewCount/EmailMenu (client:* 디렉티브)",
+    "Phase 7: SEO/피드 — per-page title/description/OG/canonical, lang=ko, @astrojs/sitemap, @astrojs/rss",
+    "Phase 8: 빌드 검증 — npm run build, dist/ HTML에 한국어 본문 정상 렌더 확인",
+    "Phase 9: Cutover — astro-blog/ 루트로 이동, 기존 React/Vite 코드 제거"
   ],
-  "build_log": [
-    "create src/utils/analytics.js",
-    "create src/components/ViewCount.jsx",
-    "edit src/pages/Post.jsx (ViewCount mount)",
-    "extend src/style.css (.view-count)",
-    "create .env.example",
-    "edit .gitignore (.env)"
-  ],
+  "build_log": [],
   "eval": {
-    "passed": true,
-    "build": "ok (vite 1.15s, Post 청크 +1.7KB)",
-    "lint": "clean",
-    "setup_required": [
-      "1. https://www.goatcounter.com/signup 가입 후 site code 받기",
-      "2. Settings → Allow viewing your stats → public access 켜기 (count 노출에 필요)",
-      "3. .env.local에 VITE_GOATCOUNTER_CODE=YOUR_CODE 설정",
-      "4. npm run build → 끝"
-    ],
-    "notes": [
-      "VITE_GOATCOUNTER_CODE 비어있으면 스크립트/표시 모두 no-op (안전)",
-      "GoatCounter는 서버단에서 같은 IP+path 30분 dedup. 진짜 모든 새로고침 카운트는 GoatCounter 정책상 불가 — 통계적 의미의 pageview로 동작"
-    ]
+    "passed": false
   }
 }

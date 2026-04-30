@@ -1,0 +1,71 @@
+---
+import { Terminal, Github, Menu, X, Sun, Moon, Monitor } from 'lucide-react';
+import EmailMenu from './EmailMenu.tsx';
+
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '') || '';
+---
+
+<header class="header">
+  <div class="header-content">
+    <div class="header-left">
+      <button
+        type="button"
+        class="header-hamburger"
+        data-sidebar-toggle
+        aria-label="사이드바 열기/닫기"
+        aria-controls="primary-sidebar"
+      >
+        <span class="hamburger-icon hamburger-icon--open" aria-hidden="true">
+          <Menu size={18} />
+        </span>
+        <span class="hamburger-icon hamburger-icon--close" aria-hidden="true">
+          <X size={18} />
+        </span>
+      </button>
+      <a href={`${baseUrl}/`} class="logo">
+        <Terminal size={22} color="var(--primary)" />
+        <span>PenGejeen's Blog</span>
+      </a>
+    </div>
+    <nav class="nav-links" aria-label="외부 링크">
+      <button
+        type="button"
+        class="header-theme-toggle"
+        data-theme-toggle
+        data-theme-icon="auto"
+        aria-label="테마 전환"
+        title="테마 전환"
+      >
+        <span class="theme-icon" data-icon-auto aria-hidden="true"><Monitor size={16} /></span>
+        <span class="theme-icon" data-icon-light aria-hidden="true"><Sun size={16} /></span>
+        <span class="theme-icon" data-icon-dark aria-hidden="true"><Moon size={16} /></span>
+      </button>
+      <span class="nav-divider" aria-hidden="true"></span>
+      <a
+        href="https://github.com/pengejeen"
+        target="_blank"
+        rel="noreferrer"
+        class="nav-link"
+        title="GitHub"
+        aria-label="GitHub"
+      >
+        <Github size={18} />
+      </a>
+      <EmailMenu variant="icon" client:load />
+    </nav>
+  </div>
+</header>
+
+<style is:global>
+  /* Hamburger icon swap based on body.sidebar-open */
+  .hamburger-icon { display: inline-flex; align-items: center; }
+  .hamburger-icon--close { display: none; }
+  body.sidebar-open .hamburger-icon--open { display: none; }
+  body.sidebar-open .hamburger-icon--close { display: inline-flex; }
+
+  /* Theme toggle icon swap based on data-theme-icon */
+  .theme-icon { display: none; align-items: center; }
+  [data-theme-toggle][data-theme-icon='auto'] [data-icon-auto] { display: inline-flex; }
+  [data-theme-toggle][data-theme-icon='light'] [data-icon-light] { display: inline-flex; }
+  [data-theme-toggle][data-theme-icon='dark'] [data-icon-dark] { display: inline-flex; }
+</style>

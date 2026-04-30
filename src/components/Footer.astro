@@ -1,0 +1,32 @@
+---
+import { Github, Rss } from 'lucide-react';
+import EmailMenu from './EmailMenu.tsx';
+
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '') || '';
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="footer-content">
+    <p class="footer-copy">
+      © {year} PenGejeen — 놀땐놀고, 공부할땐 공부하자.
+    </p>
+    <div class="footer-links">
+      <a
+        class="footer-link"
+        href="https://github.com/pengejeen"
+        target="_blank"
+        rel="noreferrer"
+        aria-label="GitHub"
+      >
+        <Github size={15} />
+        GitHub
+      </a>
+      <EmailMenu variant="footer" client:load />
+      <a class="footer-link" href={`${baseUrl}/rss.xml`} aria-label="RSS">
+        <Rss size={15} />
+        RSS
+      </a>
+    </div>
+  </div>
+</footer>
