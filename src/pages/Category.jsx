@@ -18,30 +18,49 @@ const Category = () => {
   const decodedName = decodeURIComponent(name || '');
   const [openSlug, setOpenSlug] = useState(null);
 
+  const isVirtualMLAI = decodedName === 'MLAI';
+  const displayName = isVirtualMLAI ? 'ML / AI' : humanize(decodedName);
+
   const folderCards = useMemo(() => {
     const { categories, posts } = getPostsIndex();
-    const cat = categories.find((c) => c.slug === decodedName);
+    const targetCats = isVirtualMLAI ? ['ML', 'AI'] : [decodedName];
     const folderMap = new Map();
-    if (cat) {
-      cat.subs.forEach((s) => folderMap.set(s.slug, []));
-    }
-    posts.forEach((p) => {
-      if (p.cat !== decodedName) return;
-      if (!folderMap.has(p.sub)) folderMap.set(p.sub, []);
-      folderMap.get(p.sub).push(p);
+
+    targetCats.forEach((targetCat) => {
+      const cat = categories.find((c) => c.slug === targetCat);
+      if (cat) {
+        cat.subs.forEach((s) => {
+          const key = `${targetCat}/${s.slug}`;
+          if (!folderMap.has(key)) {
+            folderMap.set(key, { cat: targetCat, sub: s.slug, posts: [] });
+          }
+        });
+      }
     });
 
-    return Array.from(folderMap.entries())
-      .map(([fn, list]) => ({
-        slug: fn,
-        title: humanize(fn),
-        posts: list.slice().sort((a, b) => sortByNumericPrefix(a.fileName, b.fileName)),
+    posts.forEach((p) => {
+      if (!targetCats.includes(p.cat)) return;
+      const key = `${p.cat}/${p.sub}`;
+      if (!folderMap.has(key)) {
+        folderMap.set(key, { cat: p.cat, sub: p.sub, posts: [] });
+      }
+      folderMap.get(key).posts.push(p);
+    });
+
+    return Array.from(folderMap.values())
+      .filter((entry) => entry.posts.length > 0)
+      .map((entry) => ({
+        key: `${entry.cat}/${entry.sub}`,
+        cat: entry.cat,
+        slug: entry.sub,
+        title: humanize(entry.sub),
+        posts: entry.posts.slice().sort((a, b) => sortByNumericPrefix(a.fileName, b.fileName)),
       }))
       .sort((a, b) => a.title.localeCompare(b.title, 'ko'));
-  }, [decodedName]);
+  }, [decodedName, isVirtualMLAI]);
 
   const toggle = (slug) => setOpenSlug((prev) => (prev === slug ? null : slug));
-  usePageTitle(humanize(decodedName));
+  usePageTitle(displayName);
 
   return (
     <div className="category-page">
@@ -49,28 +68,33 @@ const Category = () => {
         <Link to="/" className="back-btn">
           <ArrowLeft size={16} /> 홈으로
         </Link>
-        <h1 className="page-title">{humanize(decodedName)}</h1>
+        <h1 className="page-title">{displayName}</h1>
         <p className="page-subtitle">총 {folderCards.length}개의 주제</p>
       </div>
 
       {folderCards.length > 0 ? (
         <div className="accordion">
           {folderCards.map((folder, fi) => {
-            const isOpen = openSlug === folder.slug;
+            const isOpen = openSlug === folder.key;
             const accent = ACCENTS[fi % ACCENTS.length];
             return (
               <div
-                key={folder.slug}
+                key={folder.key}
                 className={`accordion-item${isOpen ? ' open' : ''}`}
                 style={{ '--accent-color': accent, animationDelay: `${fi * 0.05}s` }}
               >
                 <button
                   className="accordion-trigger"
-                  onClick={() => toggle(folder.slug)}
+                  onClick={() => toggle(folder.key)}
                   aria-expanded={isOpen}
                 >
                   <div className="accordion-trigger-left">
-                    <h2 className="accordion-section-name">{folder.title}</h2>
+                    <h2 className="accordion-section-name">
+                      {isVirtualMLAI && (
+                        <span className="accordion-section-tag">{folder.cat}</span>
+                      )}
+                      {folder.title}
+                    </h2>
                     <span className="accordion-badge">{folder.posts.length}</span>
                   </div>
                   <ChevronDown size={17} className="accordion-chevron" />
@@ -81,7 +105,7 @@ const Category = () => {
                     {folder.posts.map((post) => (
                       <Link
                         key={post.path}
-                        to={`/category/${encodeURIComponent(decodedName)}/${encodeURIComponent(folder.slug)}/${encodeURIComponent(post.slug)}`}
+                        to={`/category/${encodeURIComponent(folder.cat)}/${encodeURIComponent(folder.slug)}/${encodeURIComponent(post.slug)}`}
                         className="accordion-post-item"
                       >
                         <div className="accordion-post-left">
