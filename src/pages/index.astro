@@ -60,7 +60,7 @@ const CATEGORIES = [
           const Icon = cat.Icon;
           return (
             <a
-              href={`${baseUrl}/category/${encodeURIComponent(cat.slug)}`}
+              href={`${baseUrl}/category/${encodeURIComponent(cat.slug)}/`}
               class={`bento-card${cat.size === 'big' ? ' bento-card--big' : ''}`}
             >
               <div class="bento-card-top">
@@ -76,7 +76,7 @@ const CATEGORIES = [
     </div>
 
     <div class="travel-section">
-      <FidsBoard travelHref={`${baseUrl}/category/Travel`} client:visible />
+      <FidsBoard travelHref={`${baseUrl}/category/Travel/`} client:visible />
     </div>
   </div>
 </Layout>

@@ -9,6 +9,10 @@ import {
   humanize,
   buildPostHref,
 } from '../../../../utils/posts';
+import {
+  createBlogPostingJsonLd,
+  createBreadcrumbJsonLd,
+} from '../../../../utils/seo';
 
 export async function getStaticPaths() {
   const { posts } = await getPostsIndex();
@@ -34,17 +38,36 @@ if (!meta) {
 const { Content, headings } = await meta.entry.render();
 const hasContent = (meta.entry.body || '').trim().length > 0;
 const description = (meta.excerpt || '').replace(/\s+/g, ' ').slice(0, 160);
-const trackPath = `/category/${encodeURIComponent(meta.cat)}/${encodeURIComponent(meta.sub)}/${encodeURIComponent(meta.slug)}`;
+const trackPath = `/category/${encodeURIComponent(meta.cat)}/${encodeURIComponent(meta.sub)}/${encodeURIComponent(meta.slug)}/`;
+const canonicalUrl = new URL(`${baseUrl}${buildPostHref(meta)}`, Astro.site).toString();
+const categoryUrl = new URL(`${baseUrl}/category/${encodeURIComponent(meta.cat)}/`, Astro.site).toString();
+const subcategoryUrl = new URL(`${baseUrl}/category/${encodeURIComponent(meta.cat)}/${encodeURIComponent(meta.sub)}/`, Astro.site).toString();
+const dateModified = meta.entry.data.updated || meta.entry.data.date || meta.entry.data.created || undefined;
+const jsonLd = [
+  createBlogPostingJsonLd({
+    title: meta.title,
+    description,
+    url: canonicalUrl,
+    datePublished: meta.dateRaw,
+    dateModified,
+  }),
+  createBreadcrumbJsonLd([
+    { name: '홈', url: new URL(`${baseUrl}/`, Astro.site).toString() },
+    { name: humanize(meta.cat), url: categoryUrl },
+    { name: humanize(meta.sub), url: subcategoryUrl },
+    { name: meta.title, url: canonicalUrl },
+  ]),
+];
 ---
 
-<Layout title={meta.title} description={description}>
+<Layout title={meta.title} description={description} jsonLd={jsonLd}>
   <div class="post-shell">
     <article class="post-page">
       <ReadingProgress targetSelector=".post-page" client:visible />
 
       <div class="page-header post-header">
         <a
-          href={`${baseUrl}/category/${encodeURIComponent(decodedName)}/${encodeURIComponent(decodedSubcategory)}`}
+          href={`${baseUrl}/category/${encodeURIComponent(decodedName)}/${encodeURIComponent(decodedSubcategory)}/`}
           class="back-btn"
         >
           <ArrowLeft size={16} /> {humanize(decodedSubcategory)}

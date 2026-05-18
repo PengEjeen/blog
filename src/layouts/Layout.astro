@@ -3,12 +3,14 @@ import '../styles/style.css';
 import Header from '../components/Header.astro';
 import Sidebar from '../components/Sidebar.astro';
 import Footer from '../components/Footer.astro';
+import { serializeJsonLd } from '../utils/seo';
 
 export interface Props {
   title?: string;
   description?: string;
   ogImage?: string;
   noIndex?: boolean;
+  jsonLd?: unknown | unknown[];
 }
 
 const {
@@ -16,12 +18,15 @@ const {
   description = '개발 공부 중 배운 것들을 정리하고 경험을 아카이빙하는 개인 블로그입니다.',
   ogImage,
   noIndex = false,
+  jsonLd = [],
 } = Astro.props;
 
 const SITE_NAME = "PenGejeen's Blog";
 const fullTitle = title ? `${title} · ${SITE_NAME}` : SITE_NAME;
 const canonical = new URL(Astro.url.pathname, Astro.site).toString();
 const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).toString() : undefined;
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '') || '';
+const jsonLdItems = Array.isArray(jsonLd) ? jsonLd : [jsonLd];
 ---
 
 <!doctype html>
@@ -29,7 +34,7 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).toString() : undefined
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}/favicon.svg`} />
+    <link rel="icon" type="image/svg+xml" href={`${baseUrl}/favicon.svg`} />
     <link rel="canonical" href={canonical} />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
@@ -46,8 +51,8 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).toString() : undefined
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={description} />
 
-    <link rel="alternate" type="application/rss+xml" title={SITE_NAME} href={`${import.meta.env.BASE_URL}/rss.xml`} />
-    <link rel="sitemap" href={`${import.meta.env.BASE_URL}/sitemap-index.xml`} />
+    <link rel="alternate" type="application/rss+xml" title={SITE_NAME} href={`${baseUrl}/rss.xml`} />
+    <link rel="sitemap" href={`${baseUrl}/sitemap-index.xml`} />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -55,6 +60,12 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).toString() : undefined
       href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
+
+    {
+      jsonLdItems.map((item) => (
+        <script type="application/ld+json" set:html={serializeJsonLd(item)} />
+      ))
+    }
 
     <script is:inline>
       // Theme bootstrap — runs before paint to prevent FOUC.

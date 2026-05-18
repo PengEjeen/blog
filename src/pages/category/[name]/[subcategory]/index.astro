@@ -7,6 +7,7 @@ import {
   sortByNumericPrefix,
   buildPostHref,
 } from '../../../../utils/posts';
+import { createBreadcrumbJsonLd } from '../../../../utils/seo';
 
 export async function getStaticPaths() {
   const { categories } = await getPostsIndex();
@@ -31,12 +32,23 @@ const posts = all
   .sort((a, b) => sortByNumericPrefix(a.fileName, b.fileName));
 
 const pageTitle = `${humanize(decodedSubcategory)} — ${humanize(decodedName)}`;
+const jsonLd = createBreadcrumbJsonLd([
+  { name: '홈', url: new URL(`${baseUrl}/`, Astro.site).toString() },
+  {
+    name: humanize(decodedName),
+    url: new URL(`${baseUrl}/category/${encodeURIComponent(decodedName)}/`, Astro.site).toString(),
+  },
+  {
+    name: humanize(decodedSubcategory),
+    url: new URL(`${baseUrl}/category/${encodeURIComponent(decodedName)}/${encodeURIComponent(decodedSubcategory)}/`, Astro.site).toString(),
+  },
+]);
 ---
 
-<Layout title={pageTitle} description={`${humanize(decodedSubcategory)} 카테고리의 포스트 ${posts.length}편`}>
+<Layout title={pageTitle} description={`${humanize(decodedSubcategory)} 카테고리의 포스트 ${posts.length}편`} jsonLd={jsonLd}>
   <div class="category-page">
     <div class="page-header">
-      <a href={`${baseUrl}/category/${encodeURIComponent(decodedName)}`} class="back-btn">
+      <a href={`${baseUrl}/category/${encodeURIComponent(decodedName)}/`} class="back-btn">
         <ArrowLeft size={16} /> {humanize(decodedName)}
       </a>
       <h1 class="page-title">{humanize(decodedSubcategory)}</h1>

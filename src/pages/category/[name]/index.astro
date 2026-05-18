@@ -8,6 +8,7 @@ import {
   buildPostHref,
   type PostMeta,
 } from '../../../utils/posts';
+import { createBreadcrumbJsonLd } from '../../../utils/seo';
 
 export async function getStaticPaths() {
   const { categories } = await getPostsIndex();
@@ -73,9 +74,16 @@ const folderCards = Array.from(folderMap.values())
     posts: entry.posts.slice().sort((a, b) => sortByNumericPrefix(a.fileName, b.fileName)),
   }))
   .sort((a, b) => a.title.localeCompare(b.title, 'ko'));
+const jsonLd = createBreadcrumbJsonLd([
+  { name: '홈', url: new URL(`${baseUrl}/`, Astro.site).toString() },
+  {
+    name: displayName,
+    url: new URL(`${baseUrl}/category/${encodeURIComponent(decodedName)}/`, Astro.site).toString(),
+  },
+]);
 ---
 
-<Layout title={displayName} description={`${displayName} 카테고리의 포스트 모음`}>
+<Layout title={displayName} description={`${displayName} 카테고리의 포스트 모음`} jsonLd={jsonLd}>
   <div class="category-page">
     <div class="page-header">
       <a href={`${baseUrl}/`} class="back-btn">

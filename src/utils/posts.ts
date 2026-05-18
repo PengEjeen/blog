@@ -31,6 +31,16 @@ export const humanize = (value = '') => value.replace(/_/g, ' ');
 
 const stripExt = (name = '') => name.replace(/\.md$/, '').replace(/\.mdx$/, '');
 
+const toExcerpt = (body = '') =>
+  body
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/!\[[^\]]*]\([^)]*\)/g, ' ')
+    .replace(/\[([^\]]+)]\([^)]*\)/g, '$1')
+    .replace(/[#>*_`~|-]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 280);
+
 export const formatPostDate = (date?: string | Date) => {
   if (!date) return '날짜 미정';
   const parsed = date instanceof Date ? date : new Date(date);
@@ -53,7 +63,7 @@ const buildMeta = (entry: PostEntry): PostMeta | null => {
   const dateRaw = String(data.date || data.created || data.updated || '');
   const title = (data.title as string) || humanize(slug);
   const body = entry.body || '';
-  const excerpt = body.slice(0, 280);
+  const excerpt = (data.description as string) || toExcerpt(body);
   const searchHay = `${title} ${parts.cat} ${parts.sub} ${body.slice(0, 1500)}`.toLowerCase();
   return {
     entry,
@@ -132,9 +142,9 @@ export const findPost = async (
 export const buildPostHref = (post: PostMeta) =>
   `/category/${encodeURIComponent(post.cat)}/${encodeURIComponent(post.sub)}/${encodeURIComponent(
     post.slug,
-  )}`;
+  )}/`;
 
 export const buildSubHref = (cat: string, sub: string) =>
-  `/category/${encodeURIComponent(cat)}/${encodeURIComponent(sub)}`;
+  `/category/${encodeURIComponent(cat)}/${encodeURIComponent(sub)}/`;
 
-export const buildCatHref = (cat: string) => `/category/${encodeURIComponent(cat)}`;
+export const buildCatHref = (cat: string) => `/category/${encodeURIComponent(cat)}/`;
