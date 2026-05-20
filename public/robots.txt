@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
-Sitemap: https://pengejeen.github.io/blog/sitemap-index.xml
+
+Sitemap: https://pengejeen.github.io/blog/sitemap.xml
