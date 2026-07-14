@@ -8,6 +8,7 @@
     "start": "astro dev",
     "prebuild": "node scripts/generate-sitemap.mjs",
     "build": "astro build",
+    "postbuild": "node scripts/check-seo-build.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },

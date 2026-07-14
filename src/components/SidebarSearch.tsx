@@ -1,26 +1,20 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Search, X } from 'lucide-react';
-
-interface IndexEntry {
-  cat: string;
-  sub: string;
-  slug: string;
-  title: string;
-  href: string;
-  searchHay: string;
-}
+import type { SearchIndexEntry } from '../utils/posts';
 
 interface Props {
-  index: IndexEntry[];
+  indexUrl: string;
 }
+
+type LoadState = 'idle' | 'loading' | 'ready' | 'error';
 
 const humanize = (value = '') => value.replace(/_/g, ' ');
 
-const searchPosts = (index: IndexEntry[], query: string, limit = 8) => {
+const searchPosts = (index: SearchIndexEntry[], query: string, limit = 8) => {
   const q = query.trim().toLowerCase();
   if (!q) return [];
   const tokens = q.split(/\s+/).filter(Boolean);
-  const scored: { entry: IndexEntry; score: number }[] = [];
+  const scored: { entry: SearchIndexEntry; score: number }[] = [];
   for (const entry of index) {
     let score = 0;
     let matched = true;
@@ -40,18 +34,53 @@ const searchPosts = (index: IndexEntry[], query: string, limit = 8) => {
   return scored.slice(0, limit).map((s) => s.entry);
 };
 
-const SidebarSearch = ({ index }: Props) => {
+const isSearchIndex = (value: unknown): value is SearchIndexEntry[] =>
+  Array.isArray(value) &&
+  value.every(
+    (entry) =>
+      typeof entry === 'object' &&
+      entry !== null &&
+      ['cat', 'sub', 'slug', 'title', 'href', 'searchHay'].every(
+        (key) => typeof (entry as Record<string, unknown>)[key] === 'string',
+      ),
+  );
+
+const SidebarSearch = ({ indexUrl }: Props) => {
   const [q, setQ] = useState('');
-  const [results, setResults] = useState<IndexEntry[]>([]);
+  const [index, setIndex] = useState<SearchIndexEntry[]>([]);
+  const [results, setResults] = useState<SearchIndexEntry[]>([]);
+  const [loadState, setLoadState] = useState<LoadState>('idle');
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const stableIndex = useMemo(() => index, [index]);
+  const requestRef = useRef<Promise<void> | null>(null);
+
+  const loadIndex = useCallback(() => {
+    if (loadState === 'ready' || requestRef.current) return;
+
+    setLoadState('loading');
+    const request = fetch(indexUrl)
+      .then(async (response) => {
+        if (!response.ok) throw new Error(`Search index request failed: ${response.status}`);
+        const data: unknown = await response.json();
+        if (!isSearchIndex(data)) throw new Error('Search index response is invalid.');
+        setIndex(data);
+        setLoadState('ready');
+      })
+      .catch(() => {
+        setLoadState('error');
+      })
+      .finally(() => {
+        requestRef.current = null;
+      });
+
+    requestRef.current = request;
+  }, [indexUrl, loadState]);
 
   useEffect(() => {
     const id = setTimeout(() => {
-      setResults(searchPosts(stableIndex, q, 8));
+      setResults(loadState === 'ready' ? searchPosts(index, q, 8) : []);
     }, 80);
     return () => clearTimeout(id);
-  }, [q, stableIndex]);
+  }, [index, loadState, q]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -81,7 +110,12 @@ const SidebarSearch = ({ index }: Props) => {
           ref={inputRef}
           type="search"
           value={q}
-          onChange={(e) => setQ(e.target.value)}
+          onFocus={loadIndex}
+          onChange={(e) => {
+            const nextQuery = e.target.value;
+            setQ(nextQuery);
+            if (nextQuery.trim()) loadIndex();
+          }}
           placeholder="Search posts… (/)"
           aria-label="포스트 검색"
           className="sidebar-search-input"
@@ -102,7 +136,11 @@ const SidebarSearch = ({ index }: Props) => {
       </div>
       {q && (
         <ul className="sidebar-search-results">
-          {results.length === 0 ? (
+          {loadState === 'loading' || loadState === 'idle' ? (
+            <li className="sidebar-search-empty">검색 데이터 불러오는 중…</li>
+          ) : loadState === 'error' ? (
+            <li className="sidebar-search-empty">검색 데이터를 불러오지 못했습니다</li>
+          ) : results.length === 0 ? (
             <li className="sidebar-search-empty">결과 없음</li>
           ) : (
             results.map((p) => (

@@ -27,6 +27,15 @@ export interface PostsIndex {
   total: number;
 }
 
+export interface SearchIndexEntry {
+  cat: string;
+  sub: string;
+  slug: string;
+  title: string;
+  href: string;
+  searchHay: string;
+}
+
 export const humanize = (value = '') => value.replace(/_/g, ' ');
 
 const stripExt = (name = '') => name.replace(/\.md$/, '').replace(/\.mdx$/, '');
@@ -64,7 +73,7 @@ const buildMeta = (entry: PostEntry): PostMeta | null => {
   const title = (data.title as string) || humanize(slug);
   const body = entry.body || '';
   const excerpt = (data.description as string) || toExcerpt(body);
-  const searchHay = `${title} ${parts.cat} ${parts.sub} ${body.slice(0, 1500)}`.toLowerCase();
+  const searchHay = `${title} ${slug} ${parts.cat} ${parts.sub} ${body.slice(0, 1500)}`.toLowerCase();
   return {
     entry,
     cat: parts.cat,
@@ -148,3 +157,16 @@ export const buildSubHref = (cat: string, sub: string) =>
   `/category/${encodeURIComponent(cat)}/${encodeURIComponent(sub)}/`;
 
 export const buildCatHref = (cat: string) => `/category/${encodeURIComponent(cat)}/`;
+
+export const createSearchIndex = (
+  posts: PostMeta[],
+  baseUrl: string,
+): SearchIndexEntry[] =>
+  posts.map((post) => ({
+    cat: post.cat,
+    sub: post.sub,
+    slug: post.slug,
+    title: post.title,
+    href: `${baseUrl}${buildPostHref(post)}`,
+    searchHay: post.searchHay,
+  }));

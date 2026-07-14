@@ -19,6 +19,9 @@
     <loc>https://pengejeen.github.io/blog/category/CS/</loc>
   </url>
   <url>
+    <loc>https://pengejeen.github.io/blog/category/Database/</loc>
+  </url>
+  <url>
     <loc>https://pengejeen.github.io/blog/category/DevOps/</loc>
   </url>
   <url>
@@ -55,9 +58,6 @@
     <loc>https://pengejeen.github.io/blog/category/AI/TTS/</loc>
   </url>
   <url>
-    <loc>https://pengejeen.github.io/blog/category/BE/%ED%9A%8C%EA%B3%A0%EB%A1%9D/</loc>
-  </url>
-  <url>
     <loc>https://pengejeen.github.io/blog/category/BE/Django/</loc>
   </url>
   <url>
@@ -86,6 +86,9 @@
   </url>
   <url>
     <loc>https://pengejeen.github.io/blog/category/CS/%EC%BB%B4%ED%93%A8%ED%84%B0%20%EA%B5%AC%EC%A1%B0/</loc>
+  </url>
+  <url>
+    <loc>https://pengejeen.github.io/blog/category/Database/Postgres/</loc>
   </url>
   <url>
     <loc>https://pengejeen.github.io/blog/category/DevOps/Jenkins/</loc>
@@ -140,6 +143,12 @@
   </url>
   <url>
     <loc>https://pengejeen.github.io/blog/category/%EA%B8%B0%ED%83%80/%ED%9A%8C%EA%B3%A0%EB%A1%9D/sshfs_issue1/</loc>
+  </url>
+  <url>
+    <loc>https://pengejeen.github.io/blog/category/%EA%B8%B0%ED%83%80/%ED%9A%8C%EA%B3%A0%EB%A1%9D/sshfs%EC%99%80nfs/</loc>
+  </url>
+  <url>
+    <loc>https://pengejeen.github.io/blog/category/%EA%B8%B0%ED%83%80/%ED%9A%8C%EA%B3%A0%EB%A1%9D/TTL%EC%BA%90%EC%8B%9C/</loc>
   </url>
   <url>
     <loc>https://pengejeen.github.io/blog/category/AI/%EA%B0%9C%EC%9A%94/1.AI/</loc>
@@ -197,9 +206,6 @@
   </url>
   <url>
     <loc>https://pengejeen.github.io/blog/category/AI/TTS/2.TTS_finetuning/</loc>
-  </url>
-  <url>
-    <loc>https://pengejeen.github.io/blog/category/BE/%ED%9A%8C%EA%B3%A0%EB%A1%9D/TTL%EC%BA%90%EC%8B%9C/</loc>
   </url>
   <url>
     <loc>https://pengejeen.github.io/blog/category/BE/Django/0.%EA%B0%9C%EC%9A%94/</loc>
@@ -392,6 +398,9 @@
   </url>
   <url>
     <loc>https://pengejeen.github.io/blog/category/CS/%EC%BB%B4%ED%93%A8%ED%84%B0%20%EA%B5%AC%EC%A1%B0/7.%EC%8B%9C%EC%8A%A4%ED%85%9C_%EB%B2%84%EC%8A%A4_IO_%EB%B0%8F_interrupt/</loc>
+  </url>
+  <url>
+    <loc>https://pengejeen.github.io/blog/category/Database/Postgres/1.Postgres_%EA%B0%9C%EC%9A%94/</loc>
   </url>
   <url>
     <loc>https://pengejeen.github.io/blog/category/DevOps/Jenkins/Jenkins_Tutorial/</loc>

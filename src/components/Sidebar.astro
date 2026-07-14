@@ -42,21 +42,13 @@ const CATEGORY_LABELS: Record<string, string> = {
 const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '') || '';
 const { categories, posts, total } = await getPostsIndex();
 const recents = posts.slice(0, 5);
+const searchIndexUrl = `${baseUrl}/search-index.json`;
 
 // Active category derived at build time from current URL.
 const pathname = decodeURIComponent(Astro.url.pathname);
 const stripped = pathname.startsWith(baseUrl) ? pathname.slice(baseUrl.length) : pathname;
 const activeCategory = stripped.startsWith('/category/') ? stripped.split('/')[2] : null;
 
-// Search index (lean version for the client island).
-const searchIndex = posts.map((p) => ({
-  cat: p.cat,
-  sub: p.sub,
-  slug: p.slug,
-  title: p.title,
-  href: `${baseUrl}${buildPostHref(p)}`,
-  searchHay: p.searchHay,
-}));
 ---
 
 <button
@@ -67,7 +59,7 @@ const searchIndex = posts.map((p) => ({
 ></button>
 
 <aside id="primary-sidebar" class="sidebar" aria-label="사이트 내비게이션">
-  <SidebarSearch index={searchIndex} client:load />
+  <SidebarSearch indexUrl={searchIndexUrl} client:load />
 
   <div class="sidebar-section">
     <div class="sidebar-stats">

@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /blog/search-index.json
 
 Sitemap: https://pengejeen.github.io/blog/sitemap.xml
