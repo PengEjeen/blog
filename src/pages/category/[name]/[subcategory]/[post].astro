@@ -1,5 +1,5 @@
 ---
-import { ArrowLeft, Calendar, FolderOpen } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Calendar, FolderOpen } from 'lucide-react';
 import Layout from '../../../../layouts/Layout.astro';
 import ReadingProgress from '../../../../components/ReadingProgress.tsx';
 import PostToc from '../../../../components/PostToc.tsx';
@@ -8,6 +8,7 @@ import {
   getPostsIndex,
   humanize,
   buildPostHref,
+  sortByNumericPrefix,
 } from '../../../../utils/posts';
 import {
   createBlogPostingJsonLd,
@@ -24,10 +25,9 @@ export async function getStaticPaths() {
 
 const { entryId } = Astro.props;
 const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '') || '';
-const { name, subcategory, post } = Astro.params;
+const { name, subcategory } = Astro.params;
 const decodedName = decodeURIComponent(name as string);
 const decodedSubcategory = decodeURIComponent(subcategory as string);
-const decodedPost = decodeURIComponent(post as string);
 
 const { posts } = await getPostsIndex();
 const meta = posts.find((p) => p.entry.id === entryId);
@@ -35,7 +35,16 @@ if (!meta) {
   throw new Error(`Post not found: ${entryId}`);
 }
 
-const { Content, headings } = await meta.entry.render();
+const siblingPosts = posts
+  .filter((candidate) => candidate.cat === meta.cat && candidate.sub === meta.sub)
+  .sort((a, b) => sortByNumericPrefix(a.fileName, b.fileName));
+const currentPostIndex = siblingPosts.findIndex((candidate) => candidate.entry.id === entryId);
+const previousPost = currentPostIndex > 0 ? siblingPosts[currentPostIndex - 1] : undefined;
+const nextPost = currentPostIndex >= 0 && currentPostIndex < siblingPosts.length - 1
+  ? siblingPosts[currentPostIndex + 1]
+  : undefined;
+
+const { Content } = await meta.entry.render();
 const hasContent = (meta.entry.body || '').trim().length > 0;
 const description = (meta.excerpt || '').replace(/\s+/g, ' ').slice(0, 160);
 const trackPath = `/category/${encodeURIComponent(meta.cat)}/${encodeURIComponent(meta.sub)}/${encodeURIComponent(meta.slug)}/`;
@@ -103,6 +112,42 @@ const jsonLd = [
             <h2>본문이 아직 없습니다</h2>
             <p>이 포스트 파일은 생성되었지만 내용이 비어 있습니다.</p>
           </div>
+        )
+      }
+
+      {
+        (previousPost || nextPost) && (
+          <nav class="post-navigation" aria-label="이전 글과 다음 글">
+            <p class="post-navigation-heading">KEEP READING · 이어서 읽기</p>
+            <div class="post-navigation-grid">
+              {previousPost && (
+                <a
+                  href={`${baseUrl}${buildPostHref(previousPost)}`}
+                  class="post-navigation-card post-navigation-card--previous"
+                  rel="prev"
+                >
+                  <span class="post-navigation-label">
+                    <ArrowLeft size={18} /> 이전 글
+                  </span>
+                  <strong>{previousPost.title}</strong>
+                  <span class="post-navigation-meta">{previousPost.dateLabel}</span>
+                </a>
+              )}
+              {nextPost && (
+                <a
+                  href={`${baseUrl}${buildPostHref(nextPost)}`}
+                  class="post-navigation-card post-navigation-card--next"
+                  rel="next"
+                >
+                  <span class="post-navigation-label">
+                    다음 글 <ArrowRight size={18} />
+                  </span>
+                  <strong>{nextPost.title}</strong>
+                  <span class="post-navigation-meta">{nextPost.dateLabel}</span>
+                </a>
+              )}
+            </div>
+          </nav>
         )
       }
     </article>

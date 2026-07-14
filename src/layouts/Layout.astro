@@ -54,56 +54,32 @@ const jsonLdItems = Array.isArray(jsonLd) ? jsonLd : [jsonLd];
     <link rel="alternate" type="application/rss+xml" title={SITE_NAME} href={`${baseUrl}/rss.xml`} />
     <link rel="sitemap" href={`${baseUrl}/sitemap.xml`} />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-
     {
       jsonLdItems.map((item) => (
-        <script type="application/ld+json" set:html={serializeJsonLd(item)} />
+        <script is:inline type="application/ld+json" set:html={serializeJsonLd(item)} />
       ))
     }
 
-    <script is:inline>
-      // Theme bootstrap — runs before paint to prevent FOUC.
-      (function () {
-        try {
-          var stored = localStorage.getItem('blog-theme');
-          var valid = stored === 'light' || stored === 'dark' || stored === 'auto';
-          var theme = valid ? stored : 'auto';
-          var resolved =
-            theme === 'auto'
-              ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-              : theme;
-          document.documentElement.dataset.theme = resolved;
-          document.documentElement.dataset.themePref = theme;
-        } catch (e) {
-          document.documentElement.dataset.theme = 'light';
-          document.documentElement.dataset.themePref = 'auto';
-        }
-      })();
-    </script>
   </head>
   <body>
-    <div class="app-container">
-      <Header />
-      <div class="layout">
-        <Sidebar />
-        <main class="main-content">
-          <slot />
-        </main>
+    <a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
+    <div class="page-frame">
+      <div class="app-container">
+        <Header />
+        <div class="layout">
+          <Sidebar />
+          <main id="main-content" class="main-content" tabindex="-1">
+            <slot />
+          </main>
+        </div>
+        <Footer />
       </div>
-      <Footer />
     </div>
 
     <script is:inline>
       // Sidebar open/close — body class toggle. Header hamburger and backdrop dispatch events.
       (function () {
         var body = document.body;
-        function open() { body.classList.add('sidebar-open'); }
         function close() { body.classList.remove('sidebar-open'); }
         function toggle() { body.classList.toggle('sidebar-open'); }
         document.addEventListener('click', function (e) {
@@ -123,44 +99,5 @@ const jsonLdItems = Array.isArray(jsonLd) ? jsonLd : [jsonLd];
       })();
     </script>
 
-    <script is:inline>
-      // Theme toggle — cycles auto → light → dark → auto.
-      (function () {
-        function apply(pref) {
-          var resolved = pref === 'auto'
-            ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-            : pref;
-          document.documentElement.dataset.theme = resolved;
-          document.documentElement.dataset.themePref = pref;
-          try { localStorage.setItem('blog-theme', pref); } catch (e) {}
-          var btn = document.querySelector('[data-theme-toggle]');
-          if (btn) {
-            btn.dataset.themeIcon = pref;
-            var label = pref === 'dark' ? '다크' : pref === 'light' ? '라이트' : '시스템';
-            btn.setAttribute('aria-label', '테마: ' + label + ' (클릭해서 전환)');
-            btn.setAttribute('title', '테마: ' + label);
-          }
-        }
-        // Sync icon on first paint.
-        var initial = document.documentElement.dataset.themePref || 'auto';
-        document.addEventListener('DOMContentLoaded', function () { apply(initial); });
-
-        document.addEventListener('click', function (e) {
-          var btn = e.target.closest('[data-theme-toggle]');
-          if (!btn) return;
-          e.preventDefault();
-          var current = document.documentElement.dataset.themePref || 'auto';
-          var next = current === 'auto' ? 'light' : current === 'light' ? 'dark' : 'auto';
-          apply(next);
-        });
-
-        // React to system change when in auto mode.
-        var mq = window.matchMedia('(prefers-color-scheme: dark)');
-        mq.addEventListener('change', function () {
-          var pref = document.documentElement.dataset.themePref || 'auto';
-          if (pref === 'auto') apply('auto');
-        });
-      })();
-    </script>
   </body>
 </html>

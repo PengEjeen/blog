@@ -19,8 +19,8 @@ export async function getStaticPaths() {
 }
 
 const ACCENTS = [
-  '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6',
-  '#ef4444', '#0ea5e9', '#f97316', '#6366f1',
+  '#8e8a25', '#b3bd95', '#d77a7a', '#e6915d',
+  '#c0d4a7', '#9ab6c8', '#a5b8c0', '#8c9ae0',
 ];
 
 const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '') || '';
@@ -102,7 +102,7 @@ const jsonLd = createBreadcrumbJsonLd([
               <div
                 class="accordion-item"
                 data-accordion-key={folder.key}
-                style={`--accent-color: ${accent}; animation-delay: ${fi * 0.05}s`}
+                style={`--accent-color: ${accent}`}
               >
                 <button
                   type="button"
@@ -144,7 +144,7 @@ const jsonLd = createBreadcrumbJsonLd([
         </div>
       ) : (
         <div class="empty-state">
-          <BookOpen size={40} color="#6366f1" style={{ marginBottom: '1rem', opacity: 0.4 }} />
+          <BookOpen size={40} color="#000000" style={{ marginBottom: '1rem' }} />
           <h2>아직 게시글이 없습니다</h2>
           <p>이 카테고리는 비어 있어요.</p>
         </div>

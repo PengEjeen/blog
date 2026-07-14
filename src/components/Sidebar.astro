@@ -12,6 +12,7 @@ import {
   Wrench,
   Clock,
   Hash,
+  Newspaper,
 } from 'lucide-react';
 import { getPostsIndex, humanize, buildCatHref, buildPostHref } from '../utils/posts';
 import SidebarSearch from './SidebarSearch.tsx';
@@ -48,6 +49,7 @@ const searchIndexUrl = `${baseUrl}/search-index.json`;
 const pathname = decodeURIComponent(Astro.url.pathname);
 const stripped = pathname.startsWith(baseUrl) ? pathname.slice(baseUrl.length) : pathname;
 const activeCategory = stripped.startsWith('/category/') ? stripped.split('/')[2] : null;
+const allPostsActive = stripped.startsWith('/posts/');
 
 ---
 
@@ -59,6 +61,15 @@ const activeCategory = stripped.startsWith('/category/') ? stripped.split('/')[2
 ></button>
 
 <aside id="primary-sidebar" class="sidebar" aria-label="사이트 내비게이션">
+  <a
+    href={`${baseUrl}/posts/`}
+    class={`sidebar-all-posts${allPostsActive ? ' sidebar-all-posts--active' : ''}`}
+  >
+    <Newspaper size={16} />
+    <span>전체 글 보기</span>
+    <strong>{total}</strong>
+  </a>
+
   <SidebarSearch indexUrl={searchIndexUrl} client:load />
 
   <div class="sidebar-section">
