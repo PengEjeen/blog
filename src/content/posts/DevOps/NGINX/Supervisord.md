@@ -1,3 +1,8 @@
+---
+title: Supervisord
+date: 2026-04-30
+---
+
 # [Nginx]Supervisord
 
 # **About supervisor**

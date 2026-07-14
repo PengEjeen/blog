@@ -45,6 +45,35 @@ const readMarkdownFiles = async (directory) => {
     .sort(localeSort);
 };
 
+const normalizeLastModified = (value, filePath) => {
+  const unquoted = value.trim().replace(/^['"]|['"]$/g, '');
+  const match = unquoted.match(/^(\d{4}-\d{2}-\d{2})/);
+  if (!match || Number.isNaN(new Date(`${match[1]}T00:00:00Z`).getTime())) {
+    throw new Error(`Invalid sitemap date in ${filePath}: ${value}`);
+  }
+  return match[1];
+};
+
+const readLastModified = async (filePath) => {
+  const markdown = await readFile(filePath, 'utf8');
+  const frontmatter = markdown.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  if (!frontmatter) {
+    throw new Error(`Post must define frontmatter with a date: ${filePath}`);
+  }
+
+  const fields = new Map();
+  for (const line of frontmatter[1].split(/\r?\n/)) {
+    const match = line.match(/^(updated|date|created):\s*(.+)$/);
+    if (match) fields.set(match[1], match[2]);
+  }
+
+  for (const field of ['updated', 'date', 'created']) {
+    const value = fields.get(field);
+    if (value) return normalizeLastModified(value, filePath);
+  }
+  throw new Error(`Post must define updated, date, or created: ${filePath}`);
+};
+
 const buildUrl = (...segments) => {
   const baseSegments = BASE_PATH.split('/').filter(Boolean);
   const encodedSegments = [
@@ -67,10 +96,12 @@ const collectPosts = async () => {
       const markdownFiles = await readMarkdownFiles(subcategoryDir);
 
       for (const fileName of markdownFiles) {
+        const filePath = path.join(subcategoryDir, fileName);
         posts.push({
           category,
           subcategory,
           slug: stripMarkdownExtension(fileName),
+          lastmod: await readLastModified(filePath),
         });
       }
     }
@@ -86,37 +117,58 @@ const collectPosts = async () => {
 
 const getUniqueValues = (values) => [...new Set(values)].sort(localeSort);
 
-const collectUrls = async () => {
+const getLatestDate = (posts) => posts.reduce(
+  (latest, post) => (post.lastmod > latest ? post.lastmod : latest),
+  '',
+);
+
+const collectSitemapEntries = async () => {
   const posts = await collectPosts();
   const categories = getUniqueValues(posts.map((post) => post.category));
   const subcategoryKeys = getUniqueValues(
     posts.map((post) => `${post.category}\0${post.subcategory}`),
   );
-  const urls = [buildUrl()];
+  const entries = [{ url: buildUrl(), lastmod: getLatestDate(posts) }];
 
   for (const category of categories) {
-    urls.push(buildUrl('category', category));
+    const categoryPosts = posts.filter((post) => post.category === category);
+    entries.push({
+      url: buildUrl('category', category),
+      lastmod: getLatestDate(categoryPosts),
+    });
   }
 
   if (categories.includes('AI') || categories.includes('ML')) {
-    urls.push(buildUrl('category', 'MLAI'));
+    const mlaiPosts = posts.filter((post) => ['AI', 'ML'].includes(post.category));
+    entries.push({ url: buildUrl('category', 'MLAI'), lastmod: getLatestDate(mlaiPosts) });
   }
 
   for (const key of subcategoryKeys) {
     const [category, subcategory] = key.split('\0');
-    urls.push(buildUrl('category', category, subcategory));
+    const subcategoryPosts = posts.filter(
+      (post) => post.category === category && post.subcategory === subcategory,
+    );
+    entries.push({
+      url: buildUrl('category', category, subcategory),
+      lastmod: getLatestDate(subcategoryPosts),
+    });
   }
 
   for (const post of posts) {
-    urls.push(buildUrl('category', post.category, post.subcategory, post.slug));
+    entries.push({
+      url: buildUrl('category', post.category, post.subcategory, post.slug),
+      lastmod: post.lastmod,
+    });
   }
 
-  return [...new Set(urls)];
+  return entries;
 };
 
-const createSitemapXml = (urls) => {
-  const urlEntries = urls
-    .map((url) => `  <url>\n    <loc>${escapeXml(url)}</loc>\n  </url>`)
+const createSitemapXml = (entries) => {
+  const urlEntries = entries
+    .map(({ url, lastmod }) =>
+      `  <url>\n    <loc>${escapeXml(url)}</loc>\n    <lastmod>${lastmod}</lastmod>\n  </url>`,
+    )
     .join('\n');
 
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="${SITEMAP_NAMESPACE}">\n${urlEntries}\n</urlset>\n`;
@@ -132,7 +184,7 @@ const decodeXmlEntities = (value) =>
     .replace(/&lt;/g, '<')
     .replace(/&amp;/g, '&');
 
-const validateSitemapXml = (xml) => {
+const validateSitemapXml = (xml, expectedEntries) => {
   if (!xml.startsWith('<?xml version="1.0" encoding="UTF-8"?>')) {
     throw new Error('sitemap.xml must start with an XML declaration.');
   }
@@ -146,18 +198,25 @@ const validateSitemapXml = (xml) => {
     throw new Error('sitemap.xml must not contain an HTML document.');
   }
 
-  const locMatches = [...xml.matchAll(/<url>\s*<loc>([^<]+)<\/loc>\s*<\/url>/g)];
-  if (locMatches.length === 0) {
-    throw new Error('sitemap.xml must contain at least one url/loc entry.');
+  const entryMatches = [
+    ...xml.matchAll(
+      /<url>\s*<loc>([^<]+)<\/loc>\s*<lastmod>([^<]+)<\/lastmod>\s*<\/url>/g,
+    ),
+  ];
+  if (entryMatches.length !== expectedEntries.length) {
+    throw new Error(`Sitemap entry count mismatch: ${entryMatches.length}`);
   }
 
-  for (const [, escapedLoc] of locMatches) {
+  for (const [, escapedLoc, lastmod] of entryMatches) {
     const loc = decodeXmlEntities(escapedLoc);
     if (!loc.startsWith(`${SITE_ORIGIN}${BASE_PATH}/`)) {
       throw new Error(`Invalid sitemap URL prefix: ${loc}`);
     }
     if (/[^\x00-\x7F]/.test(loc)) {
       throw new Error(`Sitemap URL must be percent-encoded: ${loc}`);
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(lastmod)) {
+      throw new Error(`Invalid sitemap lastmod: ${lastmod}`);
     }
   }
 };
@@ -179,10 +238,11 @@ const validateTextSitemap = (text, expectedUrls) => {
 };
 
 const main = async () => {
-  const urls = await collectUrls();
-  const xml = createSitemapXml(urls);
+  const entries = await collectSitemapEntries();
+  const urls = entries.map((entry) => entry.url);
+  const xml = createSitemapXml(entries);
   const text = createTextSitemap(urls);
-  validateSitemapXml(xml);
+  validateSitemapXml(xml, entries);
   validateTextSitemap(text, urls);
 
   await mkdir(path.dirname(xmlOutputPath), { recursive: true });
@@ -195,7 +255,7 @@ const main = async () => {
     readFile(xmlOutputPath, 'utf8'),
     readFile(textOutputPath, 'utf8'),
   ]);
-  validateSitemapXml(writtenXml);
+  validateSitemapXml(writtenXml, entries);
   validateTextSitemap(writtenText, urls);
 
   console.log(`Generated XML and text sitemaps with ${urls.length} URLs.`);

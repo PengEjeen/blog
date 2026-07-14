@@ -31,6 +31,14 @@ for (const url of sitemapUrls) {
   assert.equal(/\s/.test(url), false, `Text sitemap URL contains whitespace: ${url}`);
 }
 
+const xmlSitemap = await readFile(path.join(distRoot, 'sitemap.xml'), 'utf8');
+const xmlEntries = [
+  ...xmlSitemap.matchAll(
+    /<url>\s*<loc>([^<]+)<\/loc>\s*<lastmod>(\d{4}-\d{2}-\d{2})<\/lastmod>\s*<\/url>/g,
+  ),
+];
+assert.equal(xmlEntries.length, sitemapUrls.length, 'Every sitemap URL must have lastmod.');
+
 console.log(
   `SEO build check passed with ${searchIndex.length} search entries and ${sitemapUrls.length} sitemap URLs.`,
 );
