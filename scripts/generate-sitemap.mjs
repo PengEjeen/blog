@@ -10,7 +10,8 @@ const MARKDOWN_EXTENSIONS = new Set(['.md', '.mdx']);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(__dirname, '..');
 const postsRoot = path.join(projectRoot, 'src/content/posts');
-const outputPath = path.join(projectRoot, 'public/sitemap.xml');
+const xmlOutputPath = path.join(projectRoot, 'public/sitemap.xml');
+const textOutputPath = path.join(projectRoot, 'public/sitemap.txt');
 
 const xmlEscapeMap = {
   '&': '&amp;',
@@ -121,6 +122,8 @@ const createSitemapXml = (urls) => {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="${SITEMAP_NAMESPACE}">\n${urlEntries}\n</urlset>\n`;
 };
 
+const createTextSitemap = (urls) => `${urls.join('\n')}\n`;
+
 const decodeXmlEntities = (value) =>
   value
     .replace(/&apos;/g, "'")
@@ -159,18 +162,43 @@ const validateSitemapXml = (xml) => {
   }
 };
 
+const validateTextSitemap = (text, expectedUrls) => {
+  const urls = text.trim().split('\n');
+  if (urls.length !== expectedUrls.length) {
+    throw new Error(`Text sitemap URL count mismatch: ${urls.length}`);
+  }
+
+  for (const url of urls) {
+    if (!url.startsWith(`${SITE_ORIGIN}${BASE_PATH}/`)) {
+      throw new Error(`Invalid text sitemap URL prefix: ${url}`);
+    }
+    if (/\s/.test(url) || /[^\x00-\x7F]/.test(url)) {
+      throw new Error(`Text sitemap URL must be ASCII and contain no spaces: ${url}`);
+    }
+  }
+};
+
 const main = async () => {
   const urls = await collectUrls();
   const xml = createSitemapXml(urls);
+  const text = createTextSitemap(urls);
   validateSitemapXml(xml);
+  validateTextSitemap(text, urls);
 
-  await mkdir(path.dirname(outputPath), { recursive: true });
-  await writeFile(outputPath, xml, 'utf8');
+  await mkdir(path.dirname(xmlOutputPath), { recursive: true });
+  await Promise.all([
+    writeFile(xmlOutputPath, xml, 'utf8'),
+    writeFile(textOutputPath, text, 'utf8'),
+  ]);
 
-  const writtenXml = await readFile(outputPath, 'utf8');
+  const [writtenXml, writtenText] = await Promise.all([
+    readFile(xmlOutputPath, 'utf8'),
+    readFile(textOutputPath, 'utf8'),
+  ]);
   validateSitemapXml(writtenXml);
+  validateTextSitemap(writtenText, urls);
 
-  console.log(`Generated public/sitemap.xml with ${urls.length} URLs.`);
+  console.log(`Generated XML and text sitemaps with ${urls.length} URLs.`);
 };
 
 main().catch((error) => {

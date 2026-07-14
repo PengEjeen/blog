@@ -23,4 +23,14 @@ for (const entry of searchIndex) {
   assert.match(entry.href, /^\/blog\/category\//);
 }
 
-console.log(`SEO build check passed with ${searchIndex.length} search entries.`);
+const textSitemap = await readFile(path.join(distRoot, 'sitemap.txt'), 'utf8');
+const sitemapUrls = textSitemap.trim().split('\n');
+assert.ok(sitemapUrls.length > 0, 'Text sitemap must contain URLs.');
+for (const url of sitemapUrls) {
+  assert.match(url, /^https:\/\/pengejeen\.github\.io\/blog\//);
+  assert.equal(/\s/.test(url), false, `Text sitemap URL contains whitespace: ${url}`);
+}
+
+console.log(
+  `SEO build check passed with ${searchIndex.length} search entries and ${sitemapUrls.length} sitemap URLs.`,
+);
