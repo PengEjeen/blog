@@ -9,6 +9,7 @@ import {
   Brain,
   Folder,
   ExternalLink,
+  ArrowRight,
 } from 'lucide-react';
 import Layout from '../layouts/Layout.astro';
 import FidsBoard from '../components/FidsBoard.tsx';
@@ -41,16 +42,22 @@ const CATEGORIES = [
           개발 공부 중 배운 것들을 정리하고<br />
           경험을 아카이빙하는 개인 블로그입니다.
         </p>
-        <a
-          class="bento-hero-link"
-          href="https://friendly-seaplane-a4d.notion.site/Tech-1ae31c6367a38076b55af14913b99826"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <span class="bento-hero-link-tag">Notion 이전 중</span>
-          <span class="bento-hero-link-label">기존 Tech 노트 보기</span>
-          <ExternalLink size={13} />
-        </a>
+        <div class="bento-hero-actions">
+          <a class="bento-all-posts-button" href={`${baseUrl}/posts/`}>
+            <span>전체 글 보기</span>
+            <ArrowRight size={15} />
+          </a>
+          <a
+            class="bento-hero-link"
+            href="https://friendly-seaplane-a4d.notion.site/Tech-1ae31c6367a38076b55af14913b99826"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span class="bento-hero-link-tag">Notion 이전 중</span>
+            <span class="bento-hero-link-label">기존 Tech 노트 보기</span>
+            <ExternalLink size={13} />
+          </a>
+        </div>
       </div>
     </div>
 

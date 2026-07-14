@@ -1,4 +1,5 @@
 https://pengejeen.github.io/blog/
+https://pengejeen.github.io/blog/posts/
 https://pengejeen.github.io/blog/category/%EA%B8%B0%ED%83%80/
 https://pengejeen.github.io/blog/category/AI/
 https://pengejeen.github.io/blog/category/BE/

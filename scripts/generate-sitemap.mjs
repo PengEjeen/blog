@@ -128,7 +128,11 @@ const collectSitemapEntries = async () => {
   const subcategoryKeys = getUniqueValues(
     posts.map((post) => `${post.category}\0${post.subcategory}`),
   );
-  const entries = [{ url: buildUrl(), lastmod: getLatestDate(posts) }];
+  const latestPostDate = getLatestDate(posts);
+  const entries = [
+    { url: buildUrl(), lastmod: latestPostDate },
+    { url: buildUrl('posts'), lastmod: latestPostDate },
+  ];
 
   for (const category of categories) {
     const categoryPosts = posts.filter((post) => post.category === category);

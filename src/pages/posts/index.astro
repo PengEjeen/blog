@@ -1,0 +1,597 @@
+---
+import {
+  ArrowLeft,
+  ArrowUpRight,
+  CalendarDays,
+  RotateCcw,
+  Search,
+  SlidersHorizontal,
+} from 'lucide-react';
+import Layout from '../../layouts/Layout.astro';
+import {
+  buildPostHref,
+  getPostsIndex,
+  humanize,
+  type PostMeta,
+} from '../../utils/posts';
+import { createBreadcrumbJsonLd } from '../../utils/seo';
+
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '') || '';
+const { categories, posts, total } = await getPostsIndex();
+
+interface YearGroup {
+  year: string;
+  posts: PostMeta[];
+}
+
+const groupsByYear = new Map<string, PostMeta[]>();
+for (const post of posts) {
+  const parsedDate = new Date(post.dateRaw);
+  const year = Number.isNaN(parsedDate.getTime())
+    ? '날짜 미정'
+    : String(parsedDate.getFullYear());
+  const yearPosts = groupsByYear.get(year) ?? [];
+  yearPosts.push(post);
+  groupsByYear.set(year, yearPosts);
+}
+
+const yearGroups: YearGroup[] = Array.from(groupsByYear, ([year, yearPosts]) => ({
+  year,
+  posts: yearPosts,
+}));
+const yearOptions = yearGroups
+  .map((group) => group.year)
+  .filter((year) => year !== '날짜 미정');
+const jsonLd = createBreadcrumbJsonLd([
+  { name: '홈', url: new URL(`${baseUrl}/`, Astro.site).toString() },
+  { name: '전체 글', url: new URL(`${baseUrl}/posts/`, Astro.site).toString() },
+]);
+---
+
+<Layout
+  title="전체 글"
+  description={`PenGejeen's Blog에 작성한 개발 및 여행 기록 ${total}개를 최신순으로 모았습니다.`}
+  jsonLd={jsonLd}
+>
+  <div class="all-posts-page">
+    <header class="all-posts-header">
+      <a href={`${baseUrl}/`} class="back-btn">
+        <ArrowLeft size={16} /> 메인으로
+      </a>
+      <div class="all-posts-heading-row">
+        <div>
+          <p class="all-posts-eyebrow">Archive</p>
+          <h1 class="all-posts-title">전체 글</h1>
+          <p class="all-posts-subtitle">새로 쓴 글부터 차례대로 모았습니다.</p>
+        </div>
+        <div class="all-posts-count" aria-label={`전체 게시글 ${total}개`}>
+          <strong>{total}</strong>
+          <span>posts</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="all-posts-tools" role="search" aria-label="전체 글 검색 및 필터">
+      <label class="all-posts-search-field">
+        <span class="all-posts-tool-label">글 검색</span>
+        <span class="all-posts-input-wrap">
+          <Search size={17} aria-hidden="true" />
+          <input
+            type="search"
+            class="all-posts-search-input"
+            placeholder="제목이나 내용으로 검색"
+            autocomplete="off"
+            data-post-search
+          />
+        </span>
+      </label>
+
+      <label class="all-posts-filter-field">
+        <span class="all-posts-tool-label">카테고리</span>
+        <select class="all-posts-select" data-category-filter>
+          <option value="all">모든 카테고리</option>
+          {categories.map((category) => (
+            <option value={category.slug}>{humanize(category.slug)}</option>
+          ))}
+        </select>
+      </label>
+
+      <label class="all-posts-filter-field">
+        <span class="all-posts-tool-label">연도</span>
+        <select class="all-posts-select" data-year-filter>
+          <option value="all">모든 연도</option>
+          {yearOptions.map((year) => (
+            <option value={year}>{year}년</option>
+          ))}
+        </select>
+      </label>
+
+      <button type="button" class="all-posts-reset" data-filter-reset>
+        <RotateCcw size={14} aria-hidden="true" />
+        초기화
+      </button>
+
+      <p class="all-posts-result-count" aria-live="polite" data-result-count>
+        전체 {total}개의 글
+      </p>
+    </div>
+
+    <div class="all-posts-archive" data-posts-archive>
+      {
+        yearGroups.map((group) => (
+          <section
+            class="all-posts-year"
+            aria-labelledby={`year-${group.year}`}
+            data-year-section
+          >
+            <div class="all-posts-year-heading">
+              <h2 id={`year-${group.year}`}>{group.year}</h2>
+              <span data-year-count>{group.posts.length}개의 글</span>
+            </div>
+
+            <ol class="all-posts-list">
+              {group.posts.map((post) => (
+                <li
+                  data-post-item
+                  data-search={post.searchHay}
+                  data-category={post.cat}
+                  data-year={group.year}
+                >
+                  <a href={`${baseUrl}${buildPostHref(post)}`} class="all-posts-item">
+                    <time class="all-posts-date" datetime={post.dateRaw}>
+                      <CalendarDays size={14} aria-hidden="true" />
+                      {post.dateLabel}
+                    </time>
+                    <span class="all-posts-item-main">
+                      <strong class="all-posts-item-title">{post.title}</strong>
+                      <span class="all-posts-path">
+                        {humanize(post.cat)} <span aria-hidden="true">/</span> {humanize(post.sub)}
+                      </span>
+                    </span>
+                    <ArrowUpRight className="all-posts-arrow" size={17} aria-hidden="true" />
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </section>
+        ))
+      }
+    </div>
+
+    <div class="all-posts-empty" hidden data-filter-empty>
+      <SlidersHorizontal size={28} aria-hidden="true" />
+      <strong>조건에 맞는 글이 없습니다.</strong>
+      <p>검색어를 줄이거나 필터를 초기화해 보세요.</p>
+    </div>
+  </div>
+</Layout>
+
+<script is:inline>
+  (function () {
+    var searchInput = document.querySelector('[data-post-search]');
+    var categoryFilter = document.querySelector('[data-category-filter]');
+    var yearFilter = document.querySelector('[data-year-filter]');
+    var resetButton = document.querySelector('[data-filter-reset]');
+    var resultCount = document.querySelector('[data-result-count]');
+    var emptyState = document.querySelector('[data-filter-empty]');
+    var postItems = Array.from(document.querySelectorAll('[data-post-item]'));
+    var yearSections = Array.from(document.querySelectorAll('[data-year-section]'));
+    var total = postItems.length;
+
+    if (!searchInput || !categoryFilter || !yearFilter) return;
+
+    function normalize(value) {
+      return String(value || '').trim().toLocaleLowerCase('ko-KR');
+    }
+
+    function updateYearSections() {
+      yearSections.forEach(function (section) {
+        var visiblePosts = section.querySelectorAll('[data-post-item]:not([hidden])').length;
+        section.hidden = visiblePosts === 0;
+        var count = section.querySelector('[data-year-count]');
+        if (count) count.textContent = visiblePosts + '개의 글';
+      });
+    }
+
+    function applyFilters() {
+      var query = normalize(searchInput.value);
+      var selectedCategory = categoryFilter.value;
+      var selectedYear = yearFilter.value;
+      var visibleCount = 0;
+
+      postItems.forEach(function (item) {
+        var matchesSearch = !query || normalize(item.dataset.search).includes(query);
+        var matchesCategory = selectedCategory === 'all' || item.dataset.category === selectedCategory;
+        var matchesYear = selectedYear === 'all' || item.dataset.year === selectedYear;
+        var isVisible = matchesSearch && matchesCategory && matchesYear;
+        item.hidden = !isVisible;
+        if (isVisible) visibleCount += 1;
+      });
+
+      updateYearSections();
+      if (resultCount) {
+        resultCount.textContent = visibleCount === total
+          ? '전체 ' + total + '개의 글'
+          : total + '개 중 ' + visibleCount + '개의 글';
+      }
+      if (emptyState) emptyState.hidden = visibleCount !== 0;
+    }
+
+    function resetFilters() {
+      searchInput.value = '';
+      categoryFilter.value = 'all';
+      yearFilter.value = 'all';
+      applyFilters();
+      searchInput.focus();
+    }
+
+    searchInput.addEventListener('input', applyFilters);
+    categoryFilter.addEventListener('change', applyFilters);
+    yearFilter.addEventListener('change', applyFilters);
+    if (resetButton) resetButton.addEventListener('click', resetFilters);
+  })();
+</script>
+
+<style>
+  .all-posts-page {
+    width: min(100%, 980px);
+    margin: 0 auto;
+  }
+
+  .all-posts-header {
+    margin-bottom: clamp(2.5rem, 6vw, 4.5rem);
+  }
+
+  .all-posts-heading-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+
+  .all-posts-eyebrow {
+    margin-bottom: 0.55rem;
+    color: var(--primary);
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .all-posts-title {
+    font-size: clamp(2.25rem, 6vw, 4rem);
+    font-weight: 800;
+    letter-spacing: -0.055em;
+    line-height: 1;
+  }
+
+  .all-posts-subtitle {
+    margin-top: 0.85rem;
+    color: var(--text-muted);
+    font-size: 0.92rem;
+  }
+
+  .all-posts-tools {
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) minmax(150px, 0.42fr) minmax(130px, 0.32fr) auto;
+    align-items: end;
+    gap: 0.75rem;
+    margin-bottom: clamp(2.5rem, 5vw, 4rem);
+    padding: 1rem;
+    border: 1px solid var(--card-border);
+    border-radius: 12px 5px 12px 5px;
+    background: var(--card-bg);
+  }
+
+  .all-posts-search-field,
+  .all-posts-filter-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-width: 0;
+  }
+
+  .all-posts-tool-label {
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+
+  .all-posts-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .all-posts-input-wrap :global(svg) {
+    position: absolute;
+    left: 0.8rem;
+    color: var(--text-muted);
+    pointer-events: none;
+  }
+
+  .all-posts-search-input,
+  .all-posts-select {
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid var(--card-border);
+    border-radius: 6px;
+    background: var(--bg-color);
+    color: var(--text-color);
+    font: inherit;
+    font-size: 0.88rem;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .all-posts-search-input {
+    padding: 0.65rem 0.85rem 0.65rem 2.45rem;
+  }
+
+  .all-posts-search-input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .all-posts-select {
+    padding: 0.65rem 2rem 0.65rem 0.75rem;
+    cursor: pointer;
+  }
+
+  .all-posts-search-input:focus,
+  .all-posts-select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 16%, transparent);
+  }
+
+  .all-posts-reset {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    min-height: 44px;
+    padding: 0.65rem 0.8rem;
+    border: 1px solid var(--card-border);
+    border-radius: 5px 9px 5px 9px;
+    background: transparent;
+    color: var(--text-muted);
+    font: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: border-color 0.18s ease, color 0.18s ease, background-color 0.18s ease;
+  }
+
+  .all-posts-reset:hover,
+  .all-posts-reset:focus-visible {
+    border-color: var(--primary);
+    background: color-mix(in srgb, var(--primary) 8%, transparent);
+    color: var(--primary);
+  }
+
+  .all-posts-reset:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+
+  .all-posts-result-count {
+    grid-column: 1 / -1;
+    color: var(--text-muted);
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-size: 0.72rem;
+  }
+
+  .all-posts-count {
+    display: flex;
+    align-items: baseline;
+    gap: 0.45rem;
+    padding-bottom: 0.3rem;
+    color: var(--text-muted);
+    font-family: 'SFMono-Regular', Consolas, monospace;
+  }
+
+  .all-posts-count strong {
+    color: var(--text-color);
+    font-size: clamp(1.65rem, 4vw, 2.35rem);
+    font-weight: 500;
+    line-height: 1;
+  }
+
+  .all-posts-count span {
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .all-posts-archive {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(3rem, 7vw, 5rem);
+  }
+
+  .all-posts-year[hidden],
+  .all-posts-empty[hidden] {
+    display: none;
+  }
+
+  .all-posts-year {
+    display: grid;
+    grid-template-columns: minmax(92px, 0.22fr) minmax(0, 1fr);
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+  }
+
+  .all-posts-year-heading {
+    position: sticky;
+    top: 88px;
+    align-self: start;
+  }
+
+  .all-posts-year-heading h2 {
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+  }
+
+  .all-posts-year-heading span {
+    display: block;
+    margin-top: 0.35rem;
+    color: var(--text-muted);
+    font-size: 0.72rem;
+  }
+
+  .all-posts-list {
+    list-style: none;
+    border-top: 1px solid var(--card-border);
+  }
+
+  .all-posts-item {
+    display: grid;
+    grid-template-columns: minmax(120px, 0.28fr) minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1.25rem;
+    min-height: 88px;
+    padding: 1rem 0.15rem;
+    border-bottom: 1px solid var(--card-border);
+    transition: color 0.2s ease, padding 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .all-posts-item:hover {
+    padding-left: 0.65rem;
+    color: var(--primary);
+  }
+
+  .all-posts-item:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 4px;
+  }
+
+  .all-posts-date {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--text-muted);
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-size: 0.74rem;
+    white-space: nowrap;
+  }
+
+  .all-posts-item-main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    min-width: 0;
+  }
+
+  .all-posts-item-title {
+    color: var(--text-color);
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.4;
+    transition: color 0.2s ease;
+  }
+
+  .all-posts-item:hover .all-posts-item-title {
+    color: var(--primary);
+  }
+
+  .all-posts-path {
+    overflow: hidden;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .all-posts-arrow {
+    color: var(--card-hover-border);
+    transition: color 0.2s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .all-posts-empty {
+    padding: clamp(3rem, 8vw, 5rem) 1.5rem;
+    border: 1px dashed var(--card-border);
+    border-radius: 6px 14px 6px 14px;
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  .all-posts-empty :global(svg) {
+    margin-bottom: 0.8rem;
+    color: var(--primary);
+    opacity: 0.7;
+  }
+
+  .all-posts-empty strong {
+    display: block;
+    color: var(--text-color);
+    font-size: 1rem;
+  }
+
+  .all-posts-empty p {
+    margin-top: 0.35rem;
+    font-size: 0.82rem;
+  }
+
+  .all-posts-item:hover .all-posts-arrow {
+    color: var(--primary);
+    transform: translate(2px, -2px);
+  }
+
+  @media (max-width: 680px) {
+    .all-posts-heading-row {
+      align-items: flex-start;
+    }
+
+    .all-posts-year {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .all-posts-tools {
+      grid-template-columns: 1fr 1fr;
+      padding: 0.85rem;
+    }
+
+    .all-posts-search-field {
+      grid-column: 1 / -1;
+    }
+
+    .all-posts-reset {
+      grid-column: 1 / -1;
+    }
+
+    .all-posts-year-heading {
+      position: static;
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+    }
+
+    .all-posts-year-heading span {
+      display: inline;
+      margin-top: 0;
+    }
+
+    .all-posts-item {
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 0.75rem;
+      min-height: 92px;
+    }
+
+    .all-posts-date {
+      grid-column: 1 / -1;
+      font-size: 0.7rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .all-posts-item,
+    .all-posts-item-title,
+    .all-posts-arrow,
+    .all-posts-search-input,
+    .all-posts-select,
+    .all-posts-reset {
+      transition: none;
+    }
+  }
+</style>
