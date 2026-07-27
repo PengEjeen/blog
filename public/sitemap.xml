@@ -2,11 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://pengejeen.github.io/blog/</loc>
-    <lastmod>2026-07-14</lastmod>
+    <lastmod>2026-07-27</lastmod>
   </url>
   <url>
     <loc>https://pengejeen.github.io/blog/posts/</loc>
-    <lastmod>2026-07-14</lastmod>
+    <lastmod>2026-07-27</lastmod>
   </url>
   <url>
     <loc>https://pengejeen.github.io/blog/category/%EA%B8%B0%ED%83%80/</loc>
@@ -30,7 +30,7 @@
   </url>
   <url>
     <loc>https://pengejeen.github.io/blog/category/Database/</loc>
-    <lastmod>2026-07-14</lastmod>
+    <lastmod>2026-07-27</lastmod>
   </url>
   <url>
     <loc>https://pengejeen.github.io/blog/category/DevOps/</loc>
@@ -122,7 +122,7 @@
   </url>
   <url>
     <loc>https://pengejeen.github.io/blog/category/Database/Postgres/</loc>
-    <lastmod>2026-07-14</lastmod>
+    <lastmod>2026-07-27</lastmod>
   </url>
   <url>
     <loc>https://pengejeen.github.io/blog/category/DevOps/Jenkins/</loc>
@@ -539,6 +539,10 @@
   <url>
     <loc>https://pengejeen.github.io/blog/category/Database/Postgres/1.Postgres_%EA%B0%9C%EC%9A%94/</loc>
     <lastmod>2026-07-14</lastmod>
+  </url>
+  <url>
+    <loc>https://pengejeen.github.io/blog/category/Database/Postgres/2.PostgreSQL_%EB%8D%B0%EC%9D%B4%ED%84%B0_%EC%A0%80%EC%9E%A5_%EA%B5%AC%EC%A1%B0/</loc>
+    <lastmod>2026-07-27</lastmod>
   </url>
   <url>
     <loc>https://pengejeen.github.io/blog/category/DevOps/Jenkins/Jenkins_Tutorial/</loc>
