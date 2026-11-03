@@ -13,21 +13,20 @@ sshfs를 통해 웹 서버가 NAS에 로그를 기록하는 구조로 운영되�
 
 ## **근거**
 
-먼저 nginx 컨테이너에는 이 마운트가 붙어 있었다.  
- `/home/p6consul/mnt/nas_logs -> /home/p6consul/mnt/nas_logs` 그리고 이 경로는 실제로 `sshfs` 마운트였다. 즉 원격 서버 `115.68.14.113`의 로그 경로를 로컬에 붙여 쓴 구조였다.
+먼저 nginx 컨테이너에는 로그 저장 경로가 마운트되어 있었다. 이 경로는 `sshfs`를 통해 원격 NAS의 로그 디렉터리를 로컬에 붙여 쓴 것이었다. 이 글의 경로와 컨테이너 이름은 실제 운영 값을 대신한 예시다.
 
 그리고 커널 로그에는 nginx task가 120초 넘게 block되었다고 반복해서 찍혔다. 스택도 `ksys_write`, `__x64_sys_write` 쪽이라서, nginx가 **무언가에 write 하다가** 빠져나오지 못한 상황으로 보인다. 단순 CPU 루프나 네트워크 accept 문제가 아니라 **출력/쓰기 경로에서 멈춘 것**이다.
 
 여기에 더해:
 
 * `ps`에서 nginx worker 다수가 `D` 상태였다  
-* `docker restart pmis_nginx`가 `did not receive an exit event`로 실패했다  
-* `docker rm -f pmis_nginx`도 같은 이유로 실패했다  
+* `docker restart example-nginx`가 `did not receive an exit event`로 실패했다
+* `docker rm -f example-nginx`도 같은 이유로 실패했다
 * `df -h`까지 멈췄다
 
 이 조합은 보통 **죽은 네트워크 파일시스템이나 hung mount**를 건드릴 때 나온다. `df -h`가 멈춘 것도 모든 마운트를 조회하다 `sshfs` 쪽에서 block된 것으로 설명된다.
 
-마지막으로, `sudo umount -l /home/p6consul/mnt/nas_logs`를 한 뒤 서비스가 다시 살아났다는 점이 있다.  
+마지막으로, `sudo umount -l /mnt/example-nas-logs`를 한 뒤 서비스가 다시 살아났다는 점이 있다.
  즉 **원인 리소스를 떼어내자 block이 풀렸고**, nginx와 Docker 제어가 다시 가능해진 것이다.
 
 ## **장애 메커니즘**

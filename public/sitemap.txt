@@ -34,6 +34,7 @@ https://pengejeen.github.io/blog/category/DevOps/Keycloak/
 https://pengejeen.github.io/blog/category/DevOps/NGINX/
 https://pengejeen.github.io/blog/category/FE/React/
 https://pengejeen.github.io/blog/category/ML/%EA%B8%B0%EC%B4%88/
+https://pengejeen.github.io/blog/category/ML/%EB%85%BC%EB%AC%B8%EB%A6%AC%EB%B7%B0/
 https://pengejeen.github.io/blog/category/ML/%EB%B6%84%EB%A5%98/
 https://pengejeen.github.io/blog/category/ML/%EC%8B%9C%EA%B3%84%EC%97%B4/
 https://pengejeen.github.io/blog/category/ML/%ED%86%B5%EA%B3%84%EC%9E%90%EB%A3%8C%EB%B6%84%EC%84%9D/
@@ -149,6 +150,7 @@ https://pengejeen.github.io/blog/category/FE/React/1.React.js/
 https://pengejeen.github.io/blog/category/FE/React/2.Apache_%EC%97%B0%EB%8F%99/
 https://pengejeen.github.io/blog/category/ML/%EA%B8%B0%EC%B4%88/1.ML/
 https://pengejeen.github.io/blog/category/ML/%EA%B8%B0%EC%B4%88/2.LLM/
+https://pengejeen.github.io/blog/category/ML/%EB%85%BC%EB%AC%B8%EB%A6%AC%EB%B7%B0/ChangeMamba/
 https://pengejeen.github.io/blog/category/ML/%EB%B6%84%EB%A5%98/1.Classification/
 https://pengejeen.github.io/blog/category/ML/%EC%8B%9C%EA%B3%84%EC%97%B4/1.%EC%8B%9C%EA%B3%84%EC%97%B4/
 https://pengejeen.github.io/blog/category/ML/%EC%8B%9C%EA%B3%84%EC%97%B4/2.%EC%8B%9C%EA%B3%84%EC%97%B4_%EB%AA%A8%EB%8D%B8_ETS_ARIMA/

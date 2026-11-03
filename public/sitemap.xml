@@ -2,11 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://pengejeen.github.io/blog/</loc>
-    <lastmod>2026-07-27</lastmod>
+    <lastmod>2026-10-28</lastmod>
   </url>
   <url>
     <loc>https://pengejeen.github.io/blog/posts/</loc>
-    <lastmod>2026-07-27</lastmod>
+    <lastmod>2026-10-28</lastmod>
   </url>
   <url>
     <loc>https://pengejeen.github.io/blog/category/%EA%B8%B0%ED%83%80/</loc>
@@ -42,11 +42,11 @@
   </url>
   <url>
     <loc>https://pengejeen.github.io/blog/category/ML/</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-10-28</lastmod>
   </url>
   <url>
     <loc>https://pengejeen.github.io/blog/category/MLAI/</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-10-28</lastmod>
   </url>
   <url>
     <loc>https://pengejeen.github.io/blog/category/%EA%B8%B0%ED%83%80/%EC%8B%9C%EC%8A%A4%ED%85%9C/</loc>
@@ -143,6 +143,10 @@
   <url>
     <loc>https://pengejeen.github.io/blog/category/ML/%EA%B8%B0%EC%B4%88/</loc>
     <lastmod>2026-04-24</lastmod>
+  </url>
+  <url>
+    <loc>https://pengejeen.github.io/blog/category/ML/%EB%85%BC%EB%AC%B8%EB%A6%AC%EB%B7%B0/</loc>
+    <lastmod>2026-10-28</lastmod>
   </url>
   <url>
     <loc>https://pengejeen.github.io/blog/category/ML/%EB%B6%84%EB%A5%98/</loc>
@@ -603,6 +607,10 @@
   <url>
     <loc>https://pengejeen.github.io/blog/category/ML/%EA%B8%B0%EC%B4%88/2.LLM/</loc>
     <lastmod>2026-04-24</lastmod>
+  </url>
+  <url>
+    <loc>https://pengejeen.github.io/blog/category/ML/%EB%85%BC%EB%AC%B8%EB%A6%AC%EB%B7%B0/ChangeMamba/</loc>
+    <lastmod>2026-10-28</lastmod>
   </url>
   <url>
     <loc>https://pengejeen.github.io/blog/category/ML/%EB%B6%84%EB%A5%98/1.Classification/</loc>
