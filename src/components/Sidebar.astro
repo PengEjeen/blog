@@ -27,7 +27,7 @@ const CATEGORY_ICONS: Record<string, any> = {
   MLAI: Brain,
   Database: Database,
   DevOps: Activity,
-  Cloud: CloudRain,
+  보안: Shield,
   Tools: Wrench,
   Travel: Plane,
   기타: Folder,
@@ -51,10 +51,8 @@ const pathname = decodeURIComponent(Astro.url.pathname);
 const stripped = pathname.startsWith(baseUrl) ? pathname.slice(baseUrl.length) : pathname;
 const activeCategory = stripped.startsWith('/category/') ? stripped.split('/')[2] : null;
 const allPostsActive = stripped.startsWith('/posts/');
-const securityTopic = '보안';
-const securityPath = buildSubHref('DevOps', securityTopic);
-const securityRoute = decodeURIComponent(securityPath);
-const securityActive = stripped.startsWith(securityRoute);
+const cloudPath = buildSubHref('DevOps', 'Cloud');
+const cloudActive = stripped.startsWith(cloudPath);
 
 ---
 
@@ -99,29 +97,31 @@ const securityActive = stripped.startsWith(securityRoute);
         categories.map((cat) => {
           const Icon = CATEGORY_ICONS[cat.slug] || Folder;
           const label = CATEGORY_LABELS[cat.slug] || humanize(cat.slug);
-          const security = cat.slug === 'DevOps' && cat.subs.find((sub) => sub.slug === securityTopic);
-          const isActive = activeCategory === cat.slug && !securityActive;
+          const cloud = cat.slug === 'DevOps' && cat.subs.find((sub) => sub.slug === 'Cloud');
+          const categoryPath = buildCatHref(cat.slug);
+          const isActive = activeCategory === cat.slug && !cloudActive;
           return (
             <li>
               <a
-                href={`${baseUrl}${buildCatHref(cat.slug)}`}
+                href={`${baseUrl}${categoryPath}`}
                 class={`sidebar-link${isActive ? ' sidebar-link--active' : ''}`}
+                aria-current={stripped === decodeURIComponent(categoryPath) ? 'page' : undefined}
               >
                 <span class="sidebar-link-icon"><Icon size={15} strokeWidth={1.6} /></span>
                 <span class="sidebar-link-label">{label}</span>
                 <span class="sidebar-link-count">{cat.count}</span>
               </a>
-              {security && (
+              {cloud && (
                 <ul class="sidebar-list sidebar-subcategory">
                   <li>
                     <a
-                      href={`${baseUrl}${securityPath}`}
-                      class={`sidebar-link${securityActive ? ' sidebar-link--active' : ''}`}
-                      aria-current={stripped === securityRoute ? 'page' : undefined}
+                      href={`${baseUrl}${cloudPath}`}
+                      class={`sidebar-link${cloudActive ? ' sidebar-link--active' : ''}`}
+                      aria-current={stripped === cloudPath ? 'page' : undefined}
                     >
-                      <span class="sidebar-link-icon"><Shield size={15} strokeWidth={1.6} aria-hidden="true" /></span>
-                      <span class="sidebar-link-label">{securityTopic}</span>
-                      <span class="sidebar-link-count">{security.count}</span>
+                      <span class="sidebar-link-icon"><CloudRain size={15} strokeWidth={1.6} aria-hidden="true" /></span>
+                      <span class="sidebar-link-label">{cloud.slug}</span>
+                      <span class="sidebar-link-count">{cloud.count}</span>
                     </a>
                   </li>
                 </ul>
