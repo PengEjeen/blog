@@ -13,8 +13,9 @@ import {
   Clock,
   Hash,
   Newspaper,
+  Shield,
 } from 'lucide-react';
-import { getPostsIndex, humanize, buildCatHref, buildPostHref } from '../utils/posts';
+import { getPostsIndex, humanize, buildCatHref, buildPostHref, buildSubHref } from '../utils/posts';
 import SidebarSearch from './SidebarSearch.tsx';
 
 const CATEGORY_ICONS: Record<string, any> = {
@@ -50,6 +51,10 @@ const pathname = decodeURIComponent(Astro.url.pathname);
 const stripped = pathname.startsWith(baseUrl) ? pathname.slice(baseUrl.length) : pathname;
 const activeCategory = stripped.startsWith('/category/') ? stripped.split('/')[2] : null;
 const allPostsActive = stripped.startsWith('/posts/');
+const securityTopic = '보안';
+const securityPath = buildSubHref('DevOps', securityTopic);
+const securityRoute = decodeURIComponent(securityPath);
+const securityActive = stripped.startsWith(securityRoute);
 
 ---
 
@@ -94,7 +99,8 @@ const allPostsActive = stripped.startsWith('/posts/');
         categories.map((cat) => {
           const Icon = CATEGORY_ICONS[cat.slug] || Folder;
           const label = CATEGORY_LABELS[cat.slug] || humanize(cat.slug);
-          const isActive = activeCategory === cat.slug;
+          const security = cat.slug === 'DevOps' && cat.subs.find((sub) => sub.slug === securityTopic);
+          const isActive = activeCategory === cat.slug && !securityActive;
           return (
             <li>
               <a
@@ -105,6 +111,21 @@ const allPostsActive = stripped.startsWith('/posts/');
                 <span class="sidebar-link-label">{label}</span>
                 <span class="sidebar-link-count">{cat.count}</span>
               </a>
+              {security && (
+                <ul class="sidebar-list sidebar-subcategory">
+                  <li>
+                    <a
+                      href={`${baseUrl}${securityPath}`}
+                      class={`sidebar-link${securityActive ? ' sidebar-link--active' : ''}`}
+                      aria-current={stripped === securityRoute ? 'page' : undefined}
+                    >
+                      <span class="sidebar-link-icon"><Shield size={15} strokeWidth={1.6} aria-hidden="true" /></span>
+                      <span class="sidebar-link-label">{securityTopic}</span>
+                      <span class="sidebar-link-count">{security.count}</span>
+                    </a>
+                  </li>
+                </ul>
+              )}
             </li>
           );
         })
@@ -137,6 +158,12 @@ const allPostsActive = stripped.startsWith('/posts/');
     )
   }
 </aside>
+
+<style>
+  .sidebar-subcategory {
+    padding-inline-start: 1rem;
+  }
+</style>
 
 <style is:global>
   /* Map body.sidebar-open → original .sidebar--open behavior. */
