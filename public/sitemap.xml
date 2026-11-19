@@ -34,7 +34,7 @@
   </url>
   <url>
     <loc>https://pengejeen.github.io/blog/category/DevOps/</loc>
-    <lastmod>2026-04-30</lastmod>
+    <lastmod>2026-11-19</lastmod>
   </url>
   <url>
     <loc>https://pengejeen.github.io/blog/category/FE/</loc>
@@ -139,6 +139,10 @@
   <url>
     <loc>https://pengejeen.github.io/blog/category/DevOps/NGINX/</loc>
     <lastmod>2026-04-30</lastmod>
+  </url>
+  <url>
+    <loc>https://pengejeen.github.io/blog/category/DevOps/Traefik/</loc>
+    <lastmod>2026-11-19</lastmod>
   </url>
   <url>
     <loc>https://pengejeen.github.io/blog/category/FE/React/</loc>
@@ -599,6 +603,14 @@
   <url>
     <loc>https://pengejeen.github.io/blog/category/DevOps/NGINX/Supervisord/</loc>
     <lastmod>2026-04-30</lastmod>
+  </url>
+  <url>
+    <loc>https://pengejeen.github.io/blog/category/DevOps/Traefik/2026-11-19-nginx-traefik-app-onboarding-retrospective/</loc>
+    <lastmod>2026-11-19</lastmod>
+  </url>
+  <url>
+    <loc>https://pengejeen.github.io/blog/category/DevOps/Traefik/2026-11-19-traefik-docker-routing/</loc>
+    <lastmod>2026-11-19</lastmod>
   </url>
   <url>
     <loc>https://pengejeen.github.io/blog/category/FE/React/1.React.js/</loc>

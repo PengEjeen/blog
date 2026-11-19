@@ -33,6 +33,7 @@ https://pengejeen.github.io/blog/category/DevOps/Cloud/
 https://pengejeen.github.io/blog/category/DevOps/Jenkins/
 https://pengejeen.github.io/blog/category/DevOps/Keycloak/
 https://pengejeen.github.io/blog/category/DevOps/NGINX/
+https://pengejeen.github.io/blog/category/DevOps/Traefik/
 https://pengejeen.github.io/blog/category/FE/React/
 https://pengejeen.github.io/blog/category/ML/%EA%B8%B0%EC%B4%88/
 https://pengejeen.github.io/blog/category/ML/%EB%85%BC%EB%AC%B8%EB%A6%AC%EB%B7%B0/
@@ -148,6 +149,8 @@ https://pengejeen.github.io/blog/category/DevOps/Keycloak/7.%EC%9A%B4%EC%98%81_%
 https://pengejeen.github.io/blog/category/DevOps/Keycloak/8.%EB%B9%A0%EB%A5%B8_%EA%B2%80%EC%A6%9D_%EC%BB%A4%EB%A7%A8%EB%93%9C/
 https://pengejeen.github.io/blog/category/DevOps/Keycloak/9.%EC%A0%95%EB%A6%AC/
 https://pengejeen.github.io/blog/category/DevOps/NGINX/Supervisord/
+https://pengejeen.github.io/blog/category/DevOps/Traefik/2026-11-19-nginx-traefik-app-onboarding-retrospective/
+https://pengejeen.github.io/blog/category/DevOps/Traefik/2026-11-19-traefik-docker-routing/
 https://pengejeen.github.io/blog/category/FE/React/1.React.js/
 https://pengejeen.github.io/blog/category/FE/React/2.Apache_%EC%97%B0%EB%8F%99/
 https://pengejeen.github.io/blog/category/ML/%EA%B8%B0%EC%B4%88/1.ML/
