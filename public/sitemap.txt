@@ -52,6 +52,7 @@ https://pengejeen.github.io/blog/category/%EA%B8%B0%ED%83%80/%ED%9A%8C%EA%B3%A0%
 https://pengejeen.github.io/blog/category/%EA%B8%B0%ED%83%80/%ED%9A%8C%EA%B3%A0%EB%A1%9D/sshfs_issue1/
 https://pengejeen.github.io/blog/category/%EA%B8%B0%ED%83%80/%ED%9A%8C%EA%B3%A0%EB%A1%9D/sshfs%EC%99%80nfs/
 https://pengejeen.github.io/blog/category/%EA%B8%B0%ED%83%80/%ED%9A%8C%EA%B3%A0%EB%A1%9D/TTL%EC%BA%90%EC%8B%9C/
+https://pengejeen.github.io/blog/category/%EB%B3%B4%EC%95%88/%EC%B7%A8%EC%95%BD%EC%A0%90_%EB%8C%80%EC%9D%91/2026-11-09-ubuntu-kernel-cve-2026-98432/
 https://pengejeen.github.io/blog/category/%EB%B3%B4%EC%95%88/%EC%B7%A8%EC%95%BD%EC%A0%90_%EB%8C%80%EC%9D%91/2026-11-19-java4shell-cve-2026-114938/
 https://pengejeen.github.io/blog/category/AI/%EA%B0%9C%EC%9A%94/1.AI/
 https://pengejeen.github.io/blog/category/AI/%EA%B0%9C%EC%9A%94/2.%EB%94%A5%EB%9F%AC%EB%8B%9D_%EC%9D%91%EC%9A%A9_fastapi/
